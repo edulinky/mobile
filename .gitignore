@@ -1,0 +1,60 @@
+# ── IDE & tools ──────────────────────────────
+.vscode/
+.idea/
+*.iml
+.claude/
+
+# ── OS ───────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Node / Server ────────────────────────────
+node_modules/
+dist/
+build/
+.env
+.env.local
+.env.*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.tsbuildinfo
+
+# ── Flutter / Dart ───────────────────────────
+mobile/.dart_tool/
+mobile/.flutter-plugins
+mobile/.flutter-plugins-dependencies
+mobile/.packages
+mobile/build/
+mobile/ios/Pods/
+mobile/ios/.symlinks/
+mobile/ios/Flutter/Flutter.framework
+mobile/ios/Flutter/Flutter.podspec
+mobile/android/.gradle/
+mobile/android/local.properties
+mobile/android/captures/
+*.g.dart
+*.freezed.dart
+
+# ── Next.js / Admin ──────────────────────────
+admin/.next/
+admin/out/
+admin/.vercel/
+
+# ── Firebase ─────────────────────────────────
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+*-service-account.json
+google-services.json
+GoogleService-Info.plist
+
+# ── Keys & secrets ───────────────────────────
+*.pem
+*.p12
+*.key
+*.keystore
+serviceAccountKey.json

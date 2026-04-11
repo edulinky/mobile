@@ -1,0 +1,1744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduLink — Prototype</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<style>
+
+/* ── Index page (full viewport) ── */
+#index-page{position:fixed;inset:0;background:linear-gradient(160deg,#0A0F1E 0%,#0C2A4A 55%,#0A3A5C 100%);overflow-y:auto;z-index:200;display:flex;flex-direction:column;}
+#index-page::-webkit-scrollbar{width:6px;}
+#index-page::-webkit-scrollbar-track{background:rgba(255,255,255,.04);}
+#index-page::-webkit-scrollbar-thumb{background:rgba(56,189,248,.3);border-radius:4px;}
+.idx-page-header{padding:48px 48px 28px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,.07);}
+.idx-logo{display:flex;align-items:center;gap:14px;}
+.idx-logo-icon{width:48px;height:48px;background:linear-gradient(135deg,var(--sky),var(--sky-dark));border-radius:14px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 24px rgba(56,189,248,.4);}
+.idx-logo-icon i{font-size:22px;color:#fff;}
+.idx-logo h1{font-size:24px;font-weight:900;color:#fff;letter-spacing:-.5px;}
+.idx-logo p{font-size:13px;color:rgba(186,230,253,.5);margin-top:1px;}
+.idx-page-meta{font-size:13px;color:rgba(186,230,253,.4);text-align:right;line-height:1.6;}
+.idx-page-meta strong{color:rgba(186,230,253,.7);}
+.idx-body{flex:1;padding:32px 48px 60px;}
+.idx-filters{display:flex;gap:8px;margin-bottom:28px;flex-wrap:wrap;}
+.idx-filter-btn{padding:8px 18px;border-radius:50px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:rgba(186,230,253,.7);font-family:var(--font);font-size:13px;font-weight:500;cursor:pointer;transition:.2s;}
+.idx-filter-btn:hover{background:rgba(255,255,255,.1);}
+.idx-filter-btn.active{background:var(--sky);border-color:var(--sky);color:#fff;box-shadow:0 2px 12px rgba(56,189,248,.35);}
+.idx-section{margin-bottom:36px;}
+.idx-section-label{font-size:11px;font-weight:700;color:rgba(186,230,253,.4);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.idx-section-label::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.07);}
+.idx-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;}
+.idx-card{border-radius:18px;overflow:hidden;cursor:pointer;transition:transform .18s cubic-bezier(.34,1.56,.64,1),box-shadow .18s;position:relative;}
+.idx-card:hover{transform:translateY(-4px) scale(1.02);box-shadow:0 16px 40px rgba(0,0,0,.5);}
+.idx-card:active{transform:scale(.97);}
+.idx-card-inner{padding:20px 18px 16px;display:flex;flex-direction:column;gap:10px;min-height:130px;}
+.idx-card-icon{width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+.idx-card-icon i{font-size:18px;color:#fff;}
+.idx-card-name{font-size:13px;font-weight:700;color:#fff;line-height:1.35;flex:1;}
+.idx-card-tag{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:50px;background:rgba(255,255,255,.1);font-size:10px;font-weight:600;color:rgba(255,255,255,.65);align-self:flex-start;letter-spacing:.3px;}
+/* card colour themes */
+.idx-auth{background:linear-gradient(145deg,#3B0764,#5B21B6);}
+.idx-student{background:linear-gradient(145deg,#0C3A5A,#0369A1);}
+.idx-teacher{background:linear-gradient(145deg,#1E1B4B,#3730A3);}
+.idx-institution{background:linear-gradient(145deg,#052E16,#047857);}
+/* prototype view */
+#prototype-view{display:none;flex-direction:column;align-items:center;min-height:100vh;justify-content:center;padding:32px 20px;}
+/* "back to index" floating button */
+#idx-back-btn{display:none;position:fixed;bottom:28px;right:28px;padding:10px 18px;border-radius:50px;background:var(--sky-dark);border:none;cursor:pointer;box-shadow:0 4px 20px rgba(14,165,233,.5);z-index:9999;align-items:center;gap:8px;color:#fff;font-size:13px;font-weight:600;font-family:var(--font);}
+@media(max-width:900px){.idx-page-header{padding:32px 24px 20px;}.idx-body{padding:24px 24px 48px;}.idx-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));}.idx-logo p{display:none;}}
+
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --sky:#38BDF8;--sky-dark:#0EA5E9;--sky-deeper:#0284C7;--sky-light:#BAE6FD;--sky-bg:#F0F9FF;
+  --glass:rgba(255,255,255,0.25);--glass-border:rgba(255,255,255,0.35);
+  --text:#0F172A;--text-2:#475569;--text-3:#94A3B8;
+  --radius:20px;--radius-sm:12px;--radius-xs:8px;
+  --shadow:0 8px 32px rgba(14,165,233,0.18);
+  --font:'Inter',sans-serif;
+}
+body{font-family:var(--font);background:#0F172A;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;}
+
+/* Role switcher */
+#role-switcher{display:flex;gap:4px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:50px;padding:4px;margin-bottom:16px;}
+#role-switcher button{padding:8px 18px;border:none;border-radius:50px;font-family:var(--font);font-size:13px;font-weight:500;cursor:pointer;transition:.2s;color:#94A3B8;background:transparent;}
+#role-switcher button.active{background:var(--sky);color:#fff;box-shadow:0 2px 12px rgba(56,189,248,.4);}
+
+/* Phone frame */
+#phone-frame{width:390px;height:844px;background:var(--sky-bg);border-radius:50px;overflow:hidden;position:relative;box-shadow:0 32px 80px rgba(0,0,0,.6),0 0 0 12px #1E293B,0 0 0 14px #334155;flex-shrink:0;}
+/* Notch */
+#phone-frame::before{content:'';position:absolute;top:12px;left:50%;transform:translateX(-50%);width:120px;height:34px;background:#1E293B;border-radius:20px;z-index:999;}
+
+/* Screens */
+.screen{position:absolute;inset:0;display:none;flex-direction:column;background:var(--sky-bg);overflow:hidden;}
+.screen.active{display:flex;}
+
+/* Slide transition */
+.screen.slide-in{animation:slideIn .3s cubic-bezier(.4,0,.2,1) forwards;}
+.screen.slide-out{animation:slideOut .3s cubic-bezier(.4,0,.2,1) forwards;}
+@keyframes slideIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
+@keyframes slideOut{from{transform:translateX(0)}to{transform:translateX(-30%)}}
+
+/* Status bar */
+.status-bar{height:50px;padding:14px 24px 0;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;z-index:10;}
+.status-bar .time{font-size:15px;font-weight:600;color:var(--text);}
+.status-bar .icons{display:flex;gap:5px;align-items:center;}
+.status-bar .icons span{font-size:13px;color:var(--text);}
+
+/* Top bar */
+.top-bar{padding:8px 20px 12px;display:flex;align-items:center;gap:12px;flex-shrink:0;}
+.top-bar h2{font-size:20px;font-weight:700;color:var(--text);flex:1;}
+.back-btn{width:38px;height:38px;border-radius:50%;background:var(--glass);border:1px solid var(--glass-border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;color:var(--text);flex-shrink:0;backdrop-filter:blur(8px);}
+.icon-btn{width:38px;height:38px;border-radius:50%;background:var(--glass);border:1px solid var(--glass-border);display:flex;align-items:center;justify-content:center;cursor:pointer;backdrop-filter:blur(8px);}
+
+/* Bottom nav */
+.bottom-nav{position:absolute;bottom:0;left:0;right:0;height:80px;background:rgba(255,255,255,.85);backdrop-filter:blur(20px);border-top:1px solid rgba(148,163,184,.15);display:flex;align-items:center;justify-content:space-around;padding-bottom:8px;z-index:50;}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:6px 16px;border-radius:12px;transition:.2s;}
+.nav-item svg{width:22px;height:22px;stroke:var(--text-3);transition:.2s;}
+.nav-item span{font-size:10px;color:var(--text-3);font-weight:500;transition:.2s;}
+.nav-item.active svg{stroke:var(--sky-dark);}
+.nav-item.active span{color:var(--sky-dark);}
+.nav-badge{position:relative;}
+.nav-badge::after{content:'3';position:absolute;top:-4px;right:-6px;width:16px;height:16px;background:#EF4444;border-radius:50%;font-size:9px;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;}
+
+/* Buttons */
+.btn{width:100%;padding:16px;border-radius:var(--radius);border:none;font-family:var(--font);font-size:16px;font-weight:600;cursor:pointer;transition:.2s;letter-spacing:.2px;}
+.btn-primary{background:linear-gradient(135deg,var(--sky),var(--sky-dark));color:#fff;box-shadow:0 4px 20px rgba(14,165,233,.35);}
+.btn-primary:hover{box-shadow:0 6px 24px rgba(14,165,233,.5);transform:translateY(-1px);}
+.btn-secondary{background:rgba(56,189,248,.1);color:var(--sky-dark);border:1.5px solid rgba(56,189,248,.3);}
+.btn-ghost{background:transparent;color:var(--text-2);font-size:14px;padding:12px;}
+.btn-sm{padding:10px 18px;width:auto;border-radius:50px;font-size:14px;}
+
+/* Inputs */
+.input-group{display:flex;flex-direction:column;gap:6px;}
+.input-group label{font-size:13px;font-weight:500;color:var(--text-2);}
+.input-field{padding:14px 16px;border-radius:var(--radius-sm);border:1.5px solid rgba(148,163,184,.25);background:#fff;font-family:var(--font);font-size:15px;color:var(--text);outline:none;transition:.2s;}
+.input-field:focus{border-color:var(--sky);box-shadow:0 0 0 3px rgba(56,189,248,.15);}
+
+/* Cards */
+.glass-card{background:rgba(255,255,255,.7);backdrop-filter:blur(16px);border:1px solid var(--glass-border);border-radius:var(--radius);box-shadow:var(--shadow);}
+
+/* Chips */
+.chip{display:inline-flex;align-items:center;gap:4px;padding:5px 12px;border-radius:50px;font-size:12px;font-weight:500;}
+.chip-sky{background:rgba(56,189,248,.12);color:var(--sky-deeper);}
+.chip-green{background:rgba(34,197,94,.1);color:#16A34A;}
+.chip-amber{background:rgba(245,158,11,.1);color:#D97706;}
+.chip-red{background:rgba(239,68,68,.1);color:#DC2626;}
+.chip-purple{background:rgba(139,92,246,.1);color:#7C3AED;}
+
+/* Avatar */
+.avatar{border-radius:50%;object-fit:cover;background:linear-gradient(135deg,var(--sky-light),var(--sky));}
+.avatar-initials{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;background:linear-gradient(135deg,var(--sky),var(--sky-dark));}
+
+/* Stars */
+.stars{display:flex;gap:2px;}
+.star{color:#F59E0B;font-size:13px;}
+.star.empty{color:#CBD5E1;}
+
+/* Divider */
+.divider{height:1px;background:rgba(148,163,184,.15);margin:8px 0;}
+
+/* Scrollable content */
+.scroll-content{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;}
+.scroll-content::-webkit-scrollbar{display:none;}
+
+/* ═══════════════════════════════════
+   SPLASH SCREEN
+═══════════════════════════════════ */
+#splash{background:linear-gradient(160deg,#0F172A 0%,#0C4A6E 50%,#075985 100%);justify-content:center;align-items:center;}
+#splash .logo-wrap{display:flex;flex-direction:column;align-items:center;gap:16px;margin-bottom:60px;animation:fadeUp .8s ease forwards;}
+#splash .logo-icon{width:80px;height:80px;background:linear-gradient(135deg,var(--sky),var(--sky-dark));border-radius:24px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 40px rgba(56,189,248,.5);}
+#splash .logo-icon svg{width:44px;height:44px;stroke:#fff;stroke-width:2;}
+#splash h1{font-size:40px;font-weight:800;color:#fff;letter-spacing:-1px;}
+#splash p{font-size:16px;color:rgba(186,230,253,.7);text-align:center;line-height:1.5;max-width:280px;}
+#splash .splash-btns{position:absolute;bottom:60px;width:100%;padding:0 28px;display:flex;flex-direction:column;gap:12px;}
+#splash .tagline{position:absolute;top:50%;transform:translateY(60px);font-size:14px;color:rgba(186,230,253,.5);text-align:center;width:100%;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+/* ═══════════════════════════════════
+   LOGIN
+═══════════════════════════════════ */
+#login .login-header{padding:60px 28px 28px;display:flex;flex-direction:column;gap:8px;}
+#login .login-header h1{font-size:30px;font-weight:800;color:var(--text);}
+#login .login-header p{font-size:15px;color:var(--text-2);}
+#login .login-body{padding:0 28px;display:flex;flex-direction:column;gap:16px;flex:1;}
+#login .forgot{text-align:right;font-size:13px;color:var(--sky-dark);font-weight:500;cursor:pointer;margin-top:-8px;}
+#login .login-footer{padding:20px 28px 40px;display:flex;flex-direction:column;gap:12px;}
+#login .register-link{text-align:center;font-size:14px;color:var(--text-2);}
+#login .register-link span{color:var(--sky-dark);font-weight:600;cursor:pointer;}
+.social-divider{display:flex;align-items:center;gap:12px;color:var(--text-3);font-size:13px;}
+.social-divider::before,.social-divider::after{content:'';flex:1;height:1px;background:rgba(148,163,184,.25);}
+
+/* ═══════════════════════════════════
+   REGISTER
+═══════════════════════════════════ */
+.reg-progress{display:flex;gap:6px;padding:0 28px 16px;}
+.reg-progress-dot{height:4px;border-radius:4px;background:rgba(148,163,184,.25);flex:1;transition:.4s;}
+.reg-progress-dot.done{background:var(--sky);}
+.reg-header{padding:8px 28px 20px;display:flex;flex-direction:column;gap:6px;}
+.reg-header h2{font-size:26px;font-weight:800;color:var(--text);}
+.reg-header p{font-size:14px;color:var(--text-2);}
+.reg-body{padding:0 28px;flex:1;display:flex;flex-direction:column;gap:14px;}
+.reg-footer{padding:20px 28px 40px;display:flex;flex-direction:column;gap:12px;}
+
+/* Role cards */
+.role-cards{display:flex;flex-direction:column;gap:12px;}
+.role-card{padding:18px;border-radius:var(--radius);border:2px solid rgba(148,163,184,.2);background:#fff;cursor:pointer;display:flex;align-items:center;gap:14px;transition:.2s;}
+.role-card:hover,.role-card.selected{border-color:var(--sky);background:linear-gradient(135deg,rgba(56,189,248,.06),rgba(14,165,233,.04));box-shadow:0 0 0 4px rgba(56,189,248,.1);}
+.role-card .role-icon{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.role-card .role-icon.student{background:linear-gradient(135deg,#38BDF8,#0EA5E9);}
+.role-card .role-icon.teacher{background:linear-gradient(135deg,#A78BFA,#7C3AED);}
+.role-card .role-icon.institution{background:linear-gradient(135deg,#34D399,#059669);}
+.role-card .role-icon svg{width:24px;height:24px;stroke:#fff;stroke-width:2;}
+.role-card .role-info h3{font-size:16px;font-weight:700;color:var(--text);}
+.role-card .role-info p{font-size:12px;color:var(--text-2);margin-top:2px;}
+.role-card .role-check{margin-left:auto;width:22px;height:22px;border-radius:50%;border:2px solid rgba(148,163,184,.3);flex-shrink:0;transition:.2s;}
+.role-card.selected .role-check{background:var(--sky);border-color:var(--sky);position:relative;}
+.role-card.selected .role-check::after{content:'✓';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700;}
+
+/* Photo picker */
+.photo-picker{width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,rgba(56,189,248,.15),rgba(14,165,233,.1));border:2.5px dashed var(--sky-light);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;margin:0 auto 8px;gap:4px;}
+.photo-picker svg{width:28px;height:28px;stroke:var(--sky);}
+.photo-picker span{font-size:11px;color:var(--sky-dark);font-weight:500;}
+
+/* ═══════════════════════════════════
+   CERT UPLOAD / PENDING
+═══════════════════════════════════ */
+.upload-zone{border:2.5px dashed rgba(56,189,248,.4);border-radius:var(--radius);background:rgba(56,189,248,.04);padding:40px 20px;display:flex;flex-direction:column;align-items:center;gap:10px;cursor:pointer;transition:.2s;}
+.upload-zone:hover{border-color:var(--sky);background:rgba(56,189,248,.08);}
+.upload-zone svg{width:40px;height:40px;stroke:var(--sky);}
+.upload-zone h4{font-size:15px;font-weight:600;color:var(--text);}
+.upload-zone p{font-size:13px;color:var(--text-3);text-align:center;}
+.upload-zone .file-types{display:flex;gap:8px;margin-top:4px;}
+
+.pending-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;gap:20px;text-align:center;}
+.pending-icon{width:88px;height:88px;border-radius:50%;background:rgba(245,158,11,.1);display:flex;align-items:center;justify-content:center;animation:pulse 2s infinite;}
+.pending-icon svg{width:40px;height:40px;stroke:#F59E0B;}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(245,158,11,.3)}50%{box-shadow:0 0 0 16px rgba(245,158,11,0)}}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════
+     INDEX PAGE (full viewport)
+═══════════════════════════════════ -->
+<div id="index-page">
+  <div class="idx-page-header">
+    <div class="idx-logo">
+      <div class="idx-logo-icon"><i class="fas fa-layer-group"></i></div>
+      <div>
+        <h1>EduLink</h1>
+        <p>Interactive Prototype · 22 screens</p>
+      </div>
+    </div>
+    <div class="idx-page-meta">
+      <strong>3 user roles</strong> · Student · Teacher · Institution<br>
+      Click any card to open that screen in the phone simulator.
+    </div>
+  </div>
+
+  <div class="idx-body">
+    <div class="idx-filters">
+      <button class="idx-filter-btn active" onclick="filterIndex('all',this)">All screens</button>
+      <button class="idx-filter-btn" onclick="filterIndex('auth',this)"><i class="fas fa-lock-open"></i> Auth</button>
+      <button class="idx-filter-btn" onclick="filterIndex('student',this)"><i class="fas fa-user-graduate"></i> Student</button>
+      <button class="idx-filter-btn" onclick="filterIndex('teacher',this)"><i class="fas fa-chalkboard-user"></i> Teacher</button>
+      <button class="idx-filter-btn" onclick="filterIndex('institution',this)"><i class="fas fa-building-columns"></i> Institution</button>
+    </div>
+
+    <!-- Auth -->
+    <div class="idx-section idx-section-cat-auth">
+      <div class="idx-section-label">Auth &amp; Onboarding</div>
+      <div class="idx-grid">
+        <div class="idx-card idx-auth idx-cat-auth" onclick="goToScreen('splash')"><div class="idx-card-inner"><div class="idx-card-icon"><i class="fas fa-layer-group"></i></div><div class="idx-card-name">Splash Screen</div><div class="idx-card-tag"><i class="fas fa-lock-open"></i> Auth</div></div></div>
+        <div class="idx-card idx-auth idx-cat-auth" onclick="goToScreen('login')"><div class="idx-card-inner"><div class="idx-card-icon"><i class="fas fa-right-to-bracket"></i></div><div class="idx-card-name">Login</div><div class="idx-card-tag"><i class="fas fa-lock-open"></i> Auth</div></div></div>
+        <div class="idx-card idx-auth idx-cat-auth" onclick="goToScreen('register-1')"><div class="idx-card-inner"><div class="idx-card-icon"><i class="fas fa-user-plus"></i></div><div class="idx-card-name">Register · Step 1</div><div class="idx-card-tag"><i class="fas fa-lock-open"></i> Auth</div></div></div>
+        <div class="idx-card idx-auth idx-cat-auth" onclick="goToScreen('register-2')"><div class="idx-card-inner"><div class="idx-card-icon"><i class="fas fa-id-card"></i></div><div class="idx-card-name">Register · Role Select</div><div class="idx-card-tag"><i class="fas fa-lock-open"></i> Auth</div></div></div>
+        <div class="idx-card idx-auth idx-cat-auth" onclick="goToScreen('register-3')"><div class="idx-card-inner"><div class="idx-card-icon"><i class="fas fa-circle-user"></i></div><div class="idx-card-name">Register · Profile Setup</div><div class="idx-card-tag"><i class="fas fa-lock-open"></i> Auth</div></div></div>
+        <div class="idx-card idx-auth idx-cat-auth" onclick="goToScreen('cert-upload')"><div class="idx-card-inner"><div class="idx-card-icon"><i class="fas fa-file-arrow-up"></i></div><div class="idx-card-name">Cert Upload</div><div class="idx-card-tag"><i class="fas fa-chalkboard-user"></i> Teacher</div></div></div>
+        <div class="idx-card idx-auth idx-cat-auth" onclick="goToScreen('pending-verification')"><div class="idx-card-inner"><div class="idx-card-icon"><i class="fas fa-clock"></i></div><div class="idx-card-name">Pending Verification</div><div class="idx-card-tag"><i class="fas fa-chalkboard-user"></i> Teacher</div></div></div>
+      </div>
+    </div>
+
+    <!-- Student -->
+    <div class="idx-section idx-section-cat-student">
+      <div class="idx-section-label">Student</div>
+      <div class="idx-grid">
+        <div class="idx-card idx-student idx-cat-student" onclick="goToScreen('student-discover')"><div class="idx-card-inner"><div class="idx-card-icon"><i class="fas fa-compass"></i></div><div class="idx-card-name">Discover · Swipe</div><div class="idx-card-tag"><i class="fas fa-user-graduate"></i> Student</div></div></div>
+        <div class="idx-card idx-student idx-cat-student" onclick="goToScreen('match-popup')"><div class="idx-card-inner"><div class="idx-card-icon"><i class="fas fa-heart"></i></div><div class="idx-card-name">It's a Match!</div><div class="idx-card-tag"><i class="fas fa-user-graduate"></i> Student</div></div></div>
+        <div class="idx-card idx-student idx-cat-student" onclick="goToScreen('student-matches')"><div class="idx-card-inner"><div class="idx-card-icon"><i class="fas fa-comments"></i></div><div class="idx-card-name">Matches &amp; Messages</div><div class="idx-card-tag"><i class="fas fa-user-graduate"></i> Student</div></div></div>
+        <div class="idx-card idx-student idx-cat-student" onclick="goToScreen('chat')"><div class="idx-card-inner"><div class="idx-card-icon"><i class="fas fa-comment-dots"></i></div><div class="idx-card-name">Chat Thread</div><div class="idx-card-tag"><i class="fas fa-user-graduate"></i> Student</div></div></div>
+        <div class="idx-card idx-student idx-cat-student" onclick="goToScreen('teacher-public-profile')"><div class="idx-card-inner"><div class="idx-card-icon"><i class="fas fa-address-card"></i></div><div class="idx-card-name">Teacher Public Profile</div><div class="idx-card-tag"><i class="fas fa-user-graduate"></i> Student</div></div></div>
+        <div class="idx-card idx-student idx-cat-student" onclick="goToScreen('student-profile-edit')"><div class="idx-card-inner"><div class="idx-card-icon"><i class="fas fa-user-pen"></i></div><div class="idx-card-name">My Profile</div><div class="idx-card-tag"><i class="fas fa-user-graduate"></i> Student</div></div></div>
+        <div class="idx-card idx-student idx-cat-student" onclick="goToScreen('student-settings')"><div class="idx-card-inner"><div class="idx-card-icon"><i class="fas fa-gear"></i></div><div class="idx-card-name">Settings &amp; Plans</div><div class="idx-card-tag"><i class="fas fa-user-graduate"></i> Student</div></div></div>
+      </div>
+    </div>
+
+    <!-- Teacher -->
+    <div class="idx-section idx-section-cat-teacher">
+      <div class="idx-section-label">Teacher</div>
+      <div class="idx-grid">
+        <div class="idx-card idx-teacher idx-cat-teacher" onclick="goToScreen('teacher-discover')"><div class="idx-card-inner"><div class="idx-card-icon"><i class="fas fa-magnifying-glass"></i></div><div class="idx-card-name">Discover · Students &amp; Jobs</div><div class="idx-card-tag"><i class="fas fa-chalkboard-user"></i> Teacher</div></div></div>
+        <div class="idx-card idx-teacher idx-cat-teacher" onclick="goToScreen('teacher-profile-edit')"><div class="idx-card-inner"><div class="idx-card-icon"><i class="fas fa-pen-to-square"></i></div><div class="idx-card-name">Profile Editor</div><div class="idx-card-tag"><i class="fas fa-chalkboard-user"></i> Teacher</div></div></div>
+        <div class="idx-card idx-teacher idx-cat-teacher" onclick="goToScreen('teacher-matches')"><div class="idx-card-inner"><div class="idx-card-icon"><i class="fas fa-handshake"></i></div><div class="idx-card-name">Matches</div><div class="idx-card-tag"><i class="fas fa-chalkboard-user"></i> Teacher</div></div></div>
+        <div class="idx-card idx-teacher idx-cat-teacher" onclick="goToScreen('teacher-settings')"><div class="idx-card-inner"><div class="idx-card-icon"><i class="fas fa-sliders"></i></div><div class="idx-card-name">Settings</div><div class="idx-card-tag"><i class="fas fa-chalkboard-user"></i> Teacher</div></div></div>
+      </div>
+    </div>
+
+    <!-- Institution -->
+    <div class="idx-section idx-section-cat-institution">
+      <div class="idx-section-label">Institution</div>
+      <div class="idx-grid">
+        <div class="idx-card idx-institution idx-cat-institution" onclick="goToScreen('institution-paywall')"><div class="idx-card-inner"><div class="idx-card-icon"><i class="fas fa-lock"></i></div><div class="idx-card-name">Paywall</div><div class="idx-card-tag"><i class="fas fa-building-columns"></i> Institution</div></div></div>
+        <div class="idx-card idx-institution idx-cat-institution" onclick="goToScreen('institution-dashboard')"><div class="idx-card-inner"><div class="idx-card-icon"><i class="fas fa-gauge"></i></div><div class="idx-card-name">Dashboard</div><div class="idx-card-tag"><i class="fas fa-building-columns"></i> Institution</div></div></div>
+        <div class="idx-card idx-institution idx-cat-institution" onclick="goToScreen('job-card-create')"><div class="idx-card-inner"><div class="idx-card-icon"><i class="fas fa-file-circle-plus"></i></div><div class="idx-card-name">Post a Job</div><div class="idx-card-tag"><i class="fas fa-building-columns"></i> Institution</div></div></div>
+        <div class="idx-card idx-institution idx-cat-institution" onclick="goToScreen('job-card-detail')"><div class="idx-card-inner"><div class="idx-card-icon"><i class="fas fa-briefcase"></i></div><div class="idx-card-name">Job Card Detail</div><div class="idx-card-tag"><i class="fas fa-building-columns"></i> Institution</div></div></div>
+        <div class="idx-card idx-institution idx-cat-institution" onclick="goToScreen('institution-notifications')"><div class="idx-card-inner"><div class="idx-card-icon"><i class="fas fa-bell"></i></div><div class="idx-card-name">Notifications</div><div class="idx-card-tag"><i class="fas fa-building-columns"></i> Institution</div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════
+     PROTOTYPE VIEW (phone simulator)
+═══════════════════════════════════ -->
+<div id="prototype-view">
+
+<div id="role-switcher">
+  <button onclick="switchRole('student')" class="active" id="btn-student"><i class="fas fa-user-graduate"></i> Student</button>
+  <button onclick="switchRole('teacher')" id="btn-teacher"><i class="fas fa-chalkboard-user"></i> Teacher</button>
+  <button onclick="switchRole('institution')" id="btn-institution"><i class="fas fa-building-columns"></i> Institution</button>
+</div>
+
+<div id="phone-frame">
+
+<!-- ═══ SPLASH ═══ -->
+<div class="screen" id="splash">
+  <div class="logo-wrap">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+    </div>
+    <h1>EduLink</h1>
+    <p>Discover teachers, students &amp; opportunities — swipe your way to success.</p>
+  </div>
+  <div class="splash-btns">
+    <button class="btn btn-primary" onclick="showScreen('register-1')">Get Started</button>
+    <button class="btn btn-secondary" onclick="showScreen('login')">I already have an account</button>
+  </div>
+</div>
+
+<!-- ═══ LOGIN ═══ -->
+<div class="screen" id="login">
+  <div class="status-bar"><span class="time">9:41</span><div class="icons"><span><i class="fas fa-signal"></i></span><span><i class="fas fa-wifi"></i></span><span><i class="fas fa-battery-full"></i></span></div></div>
+  <div class="login-header">
+    <h1>Welcome back</h1>
+    <p>Sign in to continue to EduLink</p>
+  </div>
+  <div class="login-body">
+    <div class="input-group"><label>Email address</label><input class="input-field" type="email" placeholder="you@example.com"></div>
+    <div class="input-group"><label>Password</label><input class="input-field" type="password" placeholder="••••••••"></div>
+    <div class="forgot">Forgot password?</div>
+  </div>
+  <div class="login-footer">
+    <button class="btn btn-primary" onclick="showScreen('student-discover')">Sign In</button>
+    <div class="social-divider">or</div>
+    <button class="btn btn-secondary">Continue with Google</button>
+    <div class="register-link">Don't have an account? <span onclick="showScreen('register-1')">Sign up</span></div>
+  </div>
+</div>
+
+<!-- ═══ REGISTER STEP 1 ═══ -->
+<div class="screen" id="register-1">
+  <div class="status-bar"><span class="time">9:41</span><div class="icons"><span><i class="fas fa-signal"></i></span><span><i class="fas fa-battery-full"></i></span></div></div>
+  <div class="top-bar"><div class="back-btn" onclick="goBack()"><i class="fas fa-arrow-left"></i></div></div>
+  <div class="reg-progress"><div class="reg-progress-dot done"></div><div class="reg-progress-dot"></div><div class="reg-progress-dot"></div></div>
+  <div class="reg-header"><h2>Create account</h2><p>Step 1 of 3 — Enter your credentials</p></div>
+  <div class="reg-body">
+    <div class="input-group"><label>Full name</label><input class="input-field" placeholder="e.g. Sarah Johnson"></div>
+    <div class="input-group"><label>Email address</label><input class="input-field" type="email" placeholder="you@example.com"></div>
+    <div class="input-group"><label>Password</label><input class="input-field" type="password" placeholder="Min. 8 characters"></div>
+    <div class="input-group"><label>Confirm password</label><input class="input-field" type="password" placeholder="Repeat password"></div>
+  </div>
+  <div class="reg-footer">
+    <button class="btn btn-primary" onclick="showScreen('register-2')">Continue →</button>
+    <div class="register-link" style="text-align:center;font-size:13px;color:var(--text-3);">Already have an account? <span style="color:var(--sky-dark);cursor:pointer;" onclick="showScreen('login')">Sign in</span></div>
+  </div>
+</div>
+
+<!-- ═══ REGISTER STEP 2 — ROLE SELECT ═══ -->
+<div class="screen" id="register-2">
+  <div class="status-bar"><span class="time">9:41</span><div class="icons"><span><i class="fas fa-signal"></i></span><span><i class="fas fa-battery-full"></i></span></div></div>
+  <div class="top-bar"><div class="back-btn" onclick="goBack()"><i class="fas fa-arrow-left"></i></div></div>
+  <div class="reg-progress"><div class="reg-progress-dot done"></div><div class="reg-progress-dot done"></div><div class="reg-progress-dot"></div></div>
+  <div class="reg-header"><h2>I am a…</h2><p>Step 2 of 3 — Choose your role. This cannot be changed later.</p></div>
+  <div class="reg-body">
+    <div class="role-cards">
+      <div class="role-card" id="role-student" onclick="selectRole('student')">
+        <div class="role-icon student"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M7 9.5v5"/><path d="M17 9.5v5"/><ellipse cx="12" cy="19" rx="5" ry="2"/></svg></div>
+        <div class="role-info"><h3>Student</h3><p>Find teachers &amp; tutors for learning</p></div>
+        <div class="role-check"></div>
+      </div>
+      <div class="role-card" id="role-teacher" onclick="selectRole('teacher')">
+        <div class="role-icon teacher"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg></div>
+        <div class="role-info"><h3>Teacher</h3><p>Connect with students &amp; institutions</p></div>
+        <div class="role-check"></div>
+      </div>
+      <div class="role-card" id="role-institution" onclick="selectRole('institution')">
+        <div class="role-icon institution"><svg viewBox="0 0 24 24" fill="none"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/></svg></div>
+        <div class="role-info"><h3>Institution</h3><p>Recruit qualified teachers</p></div>
+        <div class="role-check"></div>
+      </div>
+    </div>
+  </div>
+  <div class="reg-footer">
+    <button class="btn btn-primary" id="role-continue-btn" onclick="handleRoleContinue()">Continue →</button>
+  </div>
+</div>
+
+<!-- ═══ REGISTER STEP 3 ═══ -->
+<div class="screen" id="register-3">
+  <div class="status-bar"><span class="time">9:41</span><div class="icons"><span><i class="fas fa-signal"></i></span><span><i class="fas fa-battery-full"></i></span></div></div>
+  <div class="top-bar"><div class="back-btn" onclick="goBack()"><i class="fas fa-arrow-left"></i></div></div>
+  <div class="reg-progress"><div class="reg-progress-dot done"></div><div class="reg-progress-dot done"></div><div class="reg-progress-dot done"></div></div>
+  <div class="reg-header"><h2>Your profile</h2><p>Step 3 of 3 — Add a photo and tell us about yourself</p></div>
+  <div class="reg-body" style="align-items:stretch;">
+    <div class="photo-picker" onclick="void(0)">
+      <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4"/><path d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/></svg>
+      <span>Add photo</span>
+    </div>
+    <div class="input-group"><label>Display name</label><input class="input-field" placeholder="How should we call you?"></div>
+    <div class="input-group"><label>City / Location</label><input class="input-field" placeholder="e.g. London, UK"></div>
+    <div class="input-group"><label>Primary subject</label><input class="input-field" placeholder="e.g. Mathematics"></div>
+  </div>
+  <div class="reg-footer">
+    <button class="btn btn-primary" onclick="handleRegisterFinish()">Create Account <i class="fas fa-party-horn"></i></button>
+  </div>
+</div>
+
+<!-- ═══ CERT UPLOAD (Teacher) ═══ -->
+<div class="screen" id="cert-upload">
+  <div class="status-bar"><span class="time">9:41</span><div class="icons"><span><i class="fas fa-signal"></i></span><span><i class="fas fa-battery-full"></i></span></div></div>
+  <div class="top-bar"><div class="back-btn" onclick="goBack()"><i class="fas fa-arrow-left"></i></div><h2>Verify Credentials</h2></div>
+  <div class="scroll-content" style="padding:0 22px;display:flex;flex-direction:column;gap:16px;">
+    <div style="padding:4px 0 8px;">
+      <p style="font-size:14px;color:var(--text-2);line-height:1.6;">Upload proof of your teaching qualification. Your profile will be reviewed by our team within <strong>24–48 hours</strong>.</p>
+    </div>
+    <div class="upload-zone" onclick="simulateCertUpload()">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      <h4>Upload Certificate</h4>
+      <p>Drag &amp; drop or tap to browse</p>
+      <div class="file-types"><span class="chip chip-sky">PDF</span><span class="chip chip-sky">JPG</span><span class="chip chip-sky">PNG</span></div>
+    </div>
+    <div id="cert-file-preview" style="display:none;" class="glass-card" style="padding:14px 16px;">
+      <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;">
+        <div style="width:40px;height:40px;background:rgba(56,189,248,.1);border-radius:10px;display:flex;align-items:center;justify-content:center;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0EA5E9" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        </div>
+        <div style="flex:1;"><div style="font-size:14px;font-weight:600;color:var(--text);">teaching_cert_2024.pdf</div><div style="font-size:12px;color:var(--text-3);">2.4 MB</div></div>
+        <span style="color:#22C55E;font-size:18px;">✓</span>
+      </div>
+    </div>
+    <div class="glass-card" style="padding:14px 16px;">
+      <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:10px;">Accepted documents</div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <div style="font-size:13px;color:var(--text-2);">✓ &nbsp;PGCE / QTS certificate</div>
+        <div style="font-size:13px;color:var(--text-2);">✓ &nbsp;University degree transcript</div>
+        <div style="font-size:13px;color:var(--text-2);">✓ &nbsp;Professional teaching licence</div>
+        <div style="font-size:13px;color:var(--text-2);">✓ &nbsp;DBS / background check</div>
+      </div>
+    </div>
+  </div>
+  <div style="padding:16px 22px 40px;display:flex;flex-direction:column;gap:10px;">
+    <button class="btn btn-primary" onclick="showScreen('pending-verification')">Submit for Review</button>
+    <button class="btn btn-ghost" onclick="showScreen('pending-verification')">Skip for now</button>
+  </div>
+</div>
+
+<!-- ═══ PENDING VERIFICATION ═══ -->
+<div class="screen" id="pending-verification">
+  <div class="status-bar"><span class="time">9:41</span><div class="icons"><span><i class="fas fa-signal"></i></span><span><i class="fas fa-battery-full"></i></span></div></div>
+  <div class="pending-wrap">
+    <div class="pending-icon">
+      <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    </div>
+    <h2 style="font-size:24px;font-weight:800;color:var(--text);">Under Review</h2>
+    <p style="font-size:15px;color:var(--text-2);line-height:1.6;max-width:280px;">Your profile and credentials are being reviewed by our team. This usually takes <strong>24–48 hours</strong>.</p>
+    <div class="glass-card" style="width:100%;padding:16px 20px;display:flex;flex-direction:column;gap:10px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:13px;color:var(--text-2);">Profile created</span>
+        <span class="chip chip-green">✓ Done</span>
+      </div>
+      <div class="divider"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:13px;color:var(--text-2);">Cert submitted</span>
+        <span class="chip chip-green">✓ Done</span>
+      </div>
+      <div class="divider"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:13px;color:var(--text-2);">Admin review</span>
+        <span class="chip chip-amber"><i class="fas fa-hourglass-half"></i> Pending</span>
+      </div>
+      <div class="divider"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:13px;color:var(--text-2);">Profile live</span>
+        <span class="chip" style="background:rgba(148,163,184,.1);color:var(--text-3);">Waiting</span>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="showScreen('teacher-discover')" style="width:100%;">Continue to App →</button>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════
+     STUDENT DISCOVER
+═══════════════════════════════════ -->
+<div class="screen" id="student-discover">
+  <div class="status-bar"><span class="time">9:41</span><div class="icons"><span><i class="fas fa-signal"></i></span><span><i class="fas fa-battery-full"></i></span></div></div>
+  <div class="top-bar">
+    <div style="flex:1;">
+      <div style="font-size:12px;color:var(--text-3);font-weight:500;">London, UK</div>
+      <h2 style="font-size:22px;">Discover</h2>
+    </div>
+    <div class="icon-btn" style="position:relative;" onclick="showScreen('institution-notifications')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+      <span style="position:absolute;top:6px;right:6px;width:8px;height:8px;background:#EF4444;border-radius:50%;border:2px solid var(--sky-bg);"></span>
+    </div>
+  </div>
+  <!-- Quota banner -->
+  <div style="padding:0 18px 10px;">
+    <div class="glass-card" style="padding:10px 14px;display:flex;align-items:center;gap:10px;">
+      <div style="flex:1;">
+        <div style="font-size:12px;color:var(--text-3);margin-bottom:3px;">Daily swipes remaining</div>
+        <div style="height:6px;background:rgba(148,163,184,.2);border-radius:4px;overflow:hidden;">
+          <div style="width:75%;height:100%;background:linear-gradient(90deg,var(--sky),var(--sky-dark));border-radius:4px;"></div>
+        </div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-size:18px;font-weight:800;color:var(--sky-dark);">15</div>
+        <div style="font-size:10px;color:var(--text-3);">left</div>
+      </div>
+      <span class="chip chip-sky" style="font-size:11px;">Free</span>
+    </div>
+  </div>
+  <!-- Swipe stack -->
+  <div id="student-swipe-stack" style="flex:1;position:relative;overflow:hidden;margin:0 18px;">
+    <!-- Card 3 (bottom) -->
+    <div class="swipe-card" style="position:absolute;inset:0;transform:scale(0.90) translateY(-16px);z-index:1;pointer-events:none;">
+      <div style="height:100%;border-radius:var(--radius);overflow:hidden;background:#fff;box-shadow:var(--shadow);">
+        <img src="https://i.pravatar.cc/400?img=47" style="width:100%;height:55%;object-fit:cover;" alt="">
+        <div style="padding:14px 16px;"><div style="font-size:16px;font-weight:700;color:var(--text);">Michael Chen</div><div style="font-size:13px;color:var(--text-2);">Physics · BSc Imperial</div></div>
+      </div>
+    </div>
+    <!-- Card 2 -->
+    <div class="swipe-card" style="position:absolute;inset:0;transform:scale(0.95) translateY(-8px);z-index:2;pointer-events:none;">
+      <div style="height:100%;border-radius:var(--radius);overflow:hidden;background:#fff;box-shadow:var(--shadow);">
+        <img src="https://i.pravatar.cc/400?img=32" style="width:100%;height:55%;object-fit:cover;" alt="">
+        <div style="padding:14px 16px;"><div style="font-size:16px;font-weight:700;color:var(--text);">Priya Sharma</div><div style="font-size:13px;color:var(--text-2);">Chemistry · MSc UCL</div></div>
+      </div>
+    </div>
+    <!-- Card 1 (top — draggable) -->
+    <div class="swipe-card draggable" id="top-card-student" style="position:absolute;inset:0;z-index:3;cursor:grab;touch-action:none;">
+      <!-- LIKE stamp -->
+      <div class="like-stamp" style="position:absolute;top:50px;left:20px;z-index:10;opacity:0;transform:rotate(-15deg);border:4px solid #22C55E;border-radius:8px;padding:6px 14px;font-size:24px;font-weight:900;color:#22C55E;letter-spacing:2px;pointer-events:none;">LIKE</div>
+      <!-- PASS stamp -->
+      <div class="pass-stamp" style="position:absolute;top:50px;right:20px;z-index:10;opacity:0;transform:rotate(15deg);border:4px solid #EF4444;border-radius:8px;padding:6px 14px;font-size:24px;font-weight:900;color:#EF4444;letter-spacing:2px;pointer-events:none;">PASS</div>
+      <div style="height:100%;border-radius:var(--radius);overflow:hidden;background:#fff;box-shadow:0 12px 40px rgba(14,165,233,.2);">
+        <div style="position:relative;">
+          <img src="https://i.pravatar.cc/400?img=5" style="width:100%;height:340px;object-fit:cover;" alt="Teacher">
+          <div style="position:absolute;bottom:0;left:0;right:0;height:120px;background:linear-gradient(transparent,rgba(15,23,42,.7));"></div>
+          <div style="position:absolute;bottom:12px;left:14px;right:14px;">
+            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+              <span class="chip" style="background:rgba(56,189,248,.9);color:#fff;font-size:11px;">Mathematics</span>
+              <span class="chip" style="background:rgba(255,255,255,.2);color:#fff;font-size:11px;backdrop-filter:blur(4px);">Statistics</span>
+            </div>
+          </div>
+          <div style="position:absolute;top:12px;right:12px;"><span class="chip chip-green" style="font-size:11px;">✓ Verified</span></div>
+        </div>
+        <div style="padding:14px 16px 10px;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+            <div>
+              <div style="font-size:20px;font-weight:800;color:var(--text);">Sarah Johnson, 28</div>
+              <div style="font-size:13px;color:var(--text-2);margin-top:2px;"><i class="fas fa-location-dot"></i> 3.2 km away · BSc Mathematics, UCL</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:16px;font-weight:700;color:var(--sky-dark);">4.9 <i class="fas fa-star" style="color:#F59E0B;font-size:12px;"></i></div>
+              <div style="font-size:11px;color:var(--text-3);">47 reviews</div>
+            </div>
+          </div>
+          <div style="font-size:13px;color:var(--text-2);margin-top:8px;line-height:1.5;">Experienced A-Level &amp; GCSE Maths tutor. Making complex topics simple with a patient, personalised approach.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Action buttons -->
+  <div style="display:flex;justify-content:center;gap:18px;padding:14px 0 8px;">
+    <button onclick="triggerSwipe('left','student')" style="width:58px;height:58px;border-radius:50%;background:#fff;border:2px solid #FECACA;box-shadow:0 4px 16px rgba(239,68,68,.15);cursor:pointer;font-size:22px;color:#EF4444;"><i class="fas fa-xmark"></i></button>
+    <button onclick="showScreen('teacher-public-profile')" style="width:46px;height:46px;border-radius:50%;background:#fff;border:2px solid var(--sky-light);box-shadow:0 4px 12px rgba(56,189,248,.15);cursor:pointer;font-size:16px;margin-top:6px;color:var(--sky-dark);"><i class="fas fa-circle-info"></i></button>
+    <button onclick="triggerSwipe('right','student')" style="width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,#38BDF8,#0EA5E9);border:none;box-shadow:0 4px 16px rgba(14,165,233,.35);cursor:pointer;font-size:22px;color:#fff;"><i class="fas fa-heart"></i></button>
+  </div>
+  <div style="padding-bottom:90px;text-align:center;font-size:12px;color:var(--text-3);">Swipe right to connect · left to pass</div>
+  <!-- Bottom nav -->
+  <nav class="bottom-nav">
+    <div class="nav-item active" data-nav="discover" onclick="showScreen('student-discover')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span>Discover</span></div>
+    <div class="nav-item nav-badge" data-nav="matches" onclick="showScreen('student-matches')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg><span>Matches</span></div>
+    <div class="nav-item" data-nav="profile" onclick="showScreen('student-profile-edit')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Profile</span></div>
+    <div class="nav-item" data-nav="settings" onclick="showScreen('student-settings')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg><span>Settings</span></div>
+  </nav>
+</div>
+
+<!-- ═══ MATCH POPUP ═══ -->
+<div class="screen" id="match-popup" style="background:linear-gradient(160deg,#0C4A6E,#075985,#0369A1);">
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;gap:24px;text-align:center;">
+    <div style="font-size:48px;animation:matchBounce .6s ease;color:var(--sky);"><i class="fas fa-champagne-glasses"></i></div>
+    <h1 style="font-size:34px;font-weight:900;color:#fff;letter-spacing:-1px;">It's a Match!</h1>
+    <p style="font-size:16px;color:rgba(186,230,253,.8);line-height:1.5;">You and Sarah both liked each other.<br>Start a conversation now!</p>
+    <div style="display:flex;gap:-20px;margin:8px 0;">
+      <img src="https://i.pravatar.cc/100?img=33" style="width:80px;height:80px;border-radius:50%;border:3px solid #38BDF8;margin-right:-12px;position:relative;z-index:2;" alt="">
+      <div style="width:40px;height:40px;background:var(--sky);border-radius:50%;display:flex;align-items:center;justify-content:center;align-self:center;z-index:3;font-size:18px;border:2px solid #fff;color:#fff;"><i class="fas fa-heart"></i></div>
+      <img src="https://i.pravatar.cc/100?img=5" style="width:80px;height:80px;border-radius:50%;border:3px solid #38BDF8;margin-left:-12px;position:relative;z-index:2;" alt="">
+    </div>
+    <button class="btn btn-primary" onclick="showScreen('chat')" style="width:100%;background:linear-gradient(135deg,#38BDF8,#0EA5E9);"><i class="fas fa-comment-dots"></i> Send a Message</button>
+    <button class="btn btn-ghost" onclick="showScreen('student-discover')" style="color:rgba(186,230,253,.7);">Keep Swiping →</button>
+  </div>
+</div>
+@keyframes matchBounce{0%,100%{transform:scale(1)}50%{transform:scale(1.3)}}
+
+<!-- ═══ STUDENT MATCHES ═══ -->
+<div class="screen" id="student-matches">
+  <div class="status-bar"><span class="time">9:41</span><div class="icons"><span><i class="fas fa-signal"></i></span><span><i class="fas fa-battery-full"></i></span></div></div>
+  <div class="top-bar"><h2>Matches</h2><span class="chip chip-sky">12 total</span></div>
+  <div class="scroll-content" style="padding:0 18px 90px;">
+    <!-- New matches row -->
+    <div style="font-size:13px;font-weight:600;color:var(--text-2);margin-bottom:10px;">New matches</div>
+    <div style="display:flex;gap:14px;overflow-x:auto;padding-bottom:16px;scrollbar-width:none;">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:5px;flex-shrink:0;cursor:pointer;" onclick="showScreen('chat')">
+        <div style="position:relative;"><img src="https://i.pravatar.cc/80?img=5" style="width:62px;height:62px;border-radius:50%;border:2.5px solid var(--sky);" alt=""><span style="position:absolute;bottom:0;right:0;width:16px;height:16px;background:#22C55E;border-radius:50%;border:2px solid #fff;"></span></div>
+        <span style="font-size:11px;font-weight:500;color:var(--text);">Sarah</span>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:5px;flex-shrink:0;cursor:pointer;" onclick="showScreen('chat')">
+        <img src="https://i.pravatar.cc/80?img=44" style="width:62px;height:62px;border-radius:50%;border:2.5px solid var(--sky);" alt="">
+        <span style="font-size:11px;font-weight:500;color:var(--text);">James</span>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:5px;flex-shrink:0;cursor:pointer;" onclick="showScreen('chat')">
+        <img src="https://i.pravatar.cc/80?img=29" style="width:62px;height:62px;border-radius:50%;border:2.5px solid var(--sky);" alt="">
+        <span style="font-size:11px;font-weight:500;color:var(--text);">Aisha</span>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:5px;flex-shrink:0;cursor:pointer;" onclick="showScreen('chat')">
+        <img src="https://i.pravatar.cc/80?img=12" style="width:62px;height:62px;border-radius:50%;border:2.5px solid rgba(148,163,184,.3);" alt="">
+        <span style="font-size:11px;font-weight:500;color:var(--text);">Tom</span>
+      </div>
+    </div>
+    <!-- Messages list -->
+    <div style="font-size:13px;font-weight:600;color:var(--text-2);margin:4px 0 10px;">Messages</div>
+    <div style="display:flex;flex-direction:column;gap:2px;">
+      <div class="glass-card" style="padding:14px 16px;display:flex;gap:12px;align-items:center;cursor:pointer;" onclick="showScreen('chat')">
+        <div style="position:relative;flex-shrink:0;"><img src="https://i.pravatar.cc/80?img=5" style="width:52px;height:52px;border-radius:50%;" alt=""><span style="position:absolute;bottom:0;right:0;width:14px;height:14px;background:#22C55E;border-radius:50%;border:2px solid #fff;"></span></div>
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;justify-content:space-between;"><span style="font-size:15px;font-weight:700;color:var(--text);">Sarah Johnson</span><span style="font-size:12px;color:var(--text-3);">2m</span></div>
+          <div style="font-size:13px;color:var(--text-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">That sounds great! I'm free Thursday at 4pm <i class="fas fa-smile" style="color:#F59E0B;"></i></div>
+        </div>
+        <span style="width:20px;height:20px;background:var(--sky-dark);border-radius:50%;font-size:11px;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;">2</span>
+      </div>
+      <div class="glass-card" style="padding:14px 16px;display:flex;gap:12px;align-items:center;cursor:pointer;margin-top:4px;" onclick="showScreen('chat')">
+        <img src="https://i.pravatar.cc/80?img=44" style="width:52px;height:52px;border-radius:50%;flex-shrink:0;" alt="">
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;justify-content:space-between;"><span style="font-size:15px;font-weight:700;color:var(--text);">James Williams</span><span style="font-size:12px;color:var(--text-3);">1h</span></div>
+          <div style="font-size:13px;color:var(--text-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">I usually cover A-level and GCSE Physics...</div>
+        </div>
+      </div>
+      <div class="glass-card" style="padding:14px 16px;display:flex;gap:12px;align-items:center;cursor:pointer;margin-top:4px;" onclick="showScreen('chat')">
+        <img src="https://i.pravatar.cc/80?img=29" style="width:52px;height:52px;border-radius:50%;flex-shrink:0;" alt="">
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;justify-content:space-between;"><span style="font-size:15px;font-weight:700;color:var(--text);">Aisha Patel</span><span style="font-size:12px;color:var(--text-3);">3h</span></div>
+          <div style="font-size:13px;color:var(--text-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Yes I can do online sessions too!</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <nav class="bottom-nav">
+    <div class="nav-item" data-nav="discover" onclick="showScreen('student-discover')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span>Discover</span></div>
+    <div class="nav-item active" data-nav="matches"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg><span>Matches</span></div>
+    <div class="nav-item" data-nav="profile" onclick="showScreen('student-profile-edit')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Profile</span></div>
+    <div class="nav-item" data-nav="settings" onclick="showScreen('student-settings')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg><span>Settings</span></div>
+  </nav>
+</div>
+
+<!-- ═══ CHAT ═══ -->
+<div class="screen" id="chat">
+  <div class="status-bar"><span class="time">9:41</span><div class="icons"><span><i class="fas fa-signal"></i></span><span><i class="fas fa-battery-full"></i></span></div></div>
+  <div style="padding:8px 16px 10px;display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.85);backdrop-filter:blur(12px);border-bottom:1px solid rgba(148,163,184,.12);flex-shrink:0;">
+    <div class="back-btn" onclick="goBack()"><i class="fas fa-arrow-left"></i></div>
+    <div style="position:relative;"><img src="https://i.pravatar.cc/80?img=5" style="width:40px;height:40px;border-radius:50%;" alt=""><span style="position:absolute;bottom:0;right:0;width:12px;height:12px;background:#22C55E;border-radius:50%;border:2px solid #fff;"></span></div>
+    <div style="flex:1;cursor:pointer;" onclick="showScreen('teacher-public-profile')">
+      <div style="font-size:15px;font-weight:700;color:var(--text);">Sarah Johnson</div>
+      <div style="font-size:12px;color:#22C55E;font-weight:500;">Online now</div>
+    </div>
+    <div class="icon-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></div>
+  </div>
+  <div class="scroll-content" style="padding:16px;display:flex;flex-direction:column;gap:10px;padding-bottom:80px;">
+    <!-- Date label -->
+    <div style="text-align:center;font-size:11px;color:var(--text-3);background:rgba(148,163,184,.1);border-radius:50px;padding:4px 12px;align-self:center;">Today</div>
+    <!-- Received -->
+    <div style="display:flex;gap:8px;align-items:flex-end;">
+      <img src="https://i.pravatar.cc/40?img=5" style="width:28px;height:28px;border-radius:50%;flex-shrink:0;" alt="">
+      <div style="max-width:72%;">
+        <div style="background:#fff;border:1px solid rgba(148,163,184,.2);border-radius:18px 18px 18px 4px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.06);">
+          <p style="font-size:14px;color:var(--text);line-height:1.5;">Hi! I saw your profile and would love to help with your Maths. What level are you studying? <i class="fas fa-smile" style="color:#F59E0B;"></i></p>
+        </div>
+        <div style="font-size:11px;color:var(--text-3);margin-top:3px;padding-left:4px;">10:32 am</div>
+      </div>
+    </div>
+    <!-- Sent -->
+    <div style="display:flex;flex-direction:row-reverse;gap:8px;align-items:flex-end;">
+      <div style="max-width:72%;">
+        <div style="background:linear-gradient(135deg,#38BDF8,#0EA5E9);border-radius:18px 18px 4px 18px;padding:10px 14px;box-shadow:0 4px 12px rgba(14,165,233,.3);">
+          <p style="font-size:14px;color:#fff;line-height:1.5;">Hi Sarah! I'm doing A-level Maths, struggling with integration. Could really use some help!</p>
+        </div>
+        <div style="font-size:11px;color:var(--text-3);margin-top:3px;text-align:right;padding-right:4px;">10:34 am · ✓✓</div>
+      </div>
+    </div>
+    <!-- Received -->
+    <div style="display:flex;gap:8px;align-items:flex-end;">
+      <img src="https://i.pravatar.cc/40?img=5" style="width:28px;height:28px;border-radius:50%;flex-shrink:0;" alt="">
+      <div style="max-width:72%;">
+        <div style="background:#fff;border:1px solid rgba(148,163,184,.2);border-radius:18px 18px 18px 4px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.06);">
+          <p style="font-size:14px;color:var(--text);line-height:1.5;">Perfect! Integration is one of my specialities. I'm free Thursday at 4pm or Saturday morning — which works?</p>
+        </div>
+        <div style="font-size:11px;color:var(--text-3);margin-top:3px;padding-left:4px;">10:35 am</div>
+      </div>
+    </div>
+    <!-- Sent -->
+    <div style="display:flex;flex-direction:row-reverse;align-items:flex-end;">
+      <div style="max-width:72%;">
+        <div style="background:linear-gradient(135deg,#38BDF8,#0EA5E9);border-radius:18px 18px 4px 18px;padding:10px 14px;box-shadow:0 4px 12px rgba(14,165,233,.3);">
+          <p style="font-size:14px;color:#fff;line-height:1.5;">Thursday at 4pm works great! <i class="fas fa-hands-clapping" style="color:#F59E0B;"></i></p>
+        </div>
+        <div style="font-size:11px;color:var(--text-3);margin-top:3px;text-align:right;padding-right:4px;">10:37 am · ✓✓</div>
+      </div>
+    </div>
+    <!-- Typing indicator -->
+    <div style="display:flex;gap:8px;align-items:flex-end;">
+      <img src="https://i.pravatar.cc/40?img=5" style="width:28px;height:28px;border-radius:50%;flex-shrink:0;" alt="">
+      <div style="background:#fff;border:1px solid rgba(148,163,184,.2);border-radius:18px 18px 18px 4px;padding:12px 16px;">
+        <div style="display:flex;gap:4px;align-items:center;">
+          <span style="width:7px;height:7px;background:var(--text-3);border-radius:50%;animation:typingDot 1s infinite .0s;"></span>
+          <span style="width:7px;height:7px;background:var(--text-3);border-radius:50%;animation:typingDot 1s infinite .2s;"></span>
+          <span style="width:7px;height:7px;background:var(--text-3);border-radius:50%;animation:typingDot 1s infinite .4s;"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Input bar -->
+  <div style="position:absolute;bottom:0;left:0;right:0;padding:10px 14px 28px;background:rgba(255,255,255,.9);backdrop-filter:blur(16px);border-top:1px solid rgba(148,163,184,.15);display:flex;gap:10px;align-items:flex-end;">
+    <div class="icon-btn" style="flex-shrink:0;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div>
+    <div style="flex:1;background:#F1F5F9;border-radius:22px;padding:10px 16px;font-size:14px;color:var(--text-3);">Message Sarah…</div>
+    <button style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--sky),var(--sky-dark));border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 12px rgba(14,165,233,.35);">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    </button>
+  </div>
+</div>
+@keyframes typingDot{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-3px)}}
+
+<!-- ═══ TEACHER PUBLIC PROFILE ═══ -->
+<div class="screen" id="teacher-public-profile">
+  <div style="position:relative;height:280px;flex-shrink:0;">
+    <img src="https://i.pravatar.cc/400?img=5" style="width:100%;height:100%;object-fit:cover;" alt="">
+    <div style="position:absolute;inset:0;background:linear-gradient(transparent 40%,rgba(15,23,42,.85));"></div>
+    <div class="back-btn" style="position:absolute;top:54px;left:16px;" onclick="goBack()">←</div>
+    <div style="position:absolute;top:54px;right:16px;display:flex;gap:8px;">
+      <div class="icon-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div>
+    </div>
+    <div style="position:absolute;bottom:16px;left:16px;right:16px;">
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;">
+        <div>
+          <h2 style="font-size:24px;font-weight:800;color:#fff;line-height:1.2;">Sarah Johnson</h2>
+          <p style="font-size:13px;color:rgba(186,230,253,.85);margin-top:2px;"><i class="fas fa-location-dot"></i> 3.2 km · BSc Mathematics, UCL</p>
+        </div>
+        <div style="text-align:center;background:rgba(56,189,248,.25);backdrop-filter:blur(8px);border-radius:12px;padding:6px 12px;border:1px solid rgba(56,189,248,.3);">
+          <div style="font-size:20px;font-weight:800;color:#fff;">4.9</div>
+          <div style="font-size:10px;color:rgba(186,230,253,.7);"<i class="fas fa-star" style="color:#F59E0B;"></i> 47 reviews</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;">
+        <span class="chip chip-green" style="font-size:11px;">✓ Verified</span>
+        <span class="chip" style="background:rgba(56,189,248,.2);color:#BAE6FD;font-size:11px;border:1px solid rgba(56,189,248,.3);">Mathematics</span>
+        <span class="chip" style="background:rgba(56,189,248,.2);color:#BAE6FD;font-size:11px;border:1px solid rgba(56,189,248,.3);">Statistics</span>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-content" style="padding:16px 18px 100px;display:flex;flex-direction:column;gap:16px;">
+    <!-- Bio -->
+    <div class="glass-card" style="padding:16px;">
+      <div style="font-size:13px;font-weight:600;color:var(--sky-dark);margin-bottom:8px;">ABOUT</div>
+      <p style="font-size:14px;color:var(--text-2);line-height:1.65;">Experienced A-Level &amp; GCSE Maths tutor with 5+ years helping students achieve their potential. Patient, encouraging approach — I break complex topics into manageable steps.</p>
+    </div>
+    <!-- Stats row -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
+      <div class="glass-card" style="padding:12px;text-align:center;"><div style="font-size:20px;font-weight:800;color:var(--sky-dark);">5+</div><div style="font-size:11px;color:var(--text-3);">Years exp.</div></div>
+      <div class="glass-card" style="padding:12px;text-align:center;"><div style="font-size:20px;font-weight:800;color:var(--sky-dark);">120</div><div style="font-size:11px;color:var(--text-3);">Students</div></div>
+      <div class="glass-card" style="padding:12px;text-align:center;"><div style="font-size:20px;font-weight:800;color:var(--sky-dark);">£35</div><div style="font-size:11px;color:var(--text-3);">Per hour</div></div>
+    </div>
+    <!-- Gallery -->
+    <div>
+      <div style="font-size:13px;font-weight:600;color:var(--sky-dark);margin-bottom:10px;">GALLERY</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">
+        <img src="https://picsum.photos/120/120?random=1" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;" alt="">
+        <img src="https://picsum.photos/120/120?random=2" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;" alt="">
+        <img src="https://picsum.photos/120/120?random=3" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;" alt="">
+      </div>
+    </div>
+    <!-- Schedule -->
+    <div class="glass-card" style="padding:16px;">
+      <div style="font-size:13px;font-weight:600;color:var(--sky-dark);margin-bottom:10px;">AVAILABILITY</div>
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center;">
+        <div style="font-size:10px;color:var(--text-3);">M</div><div style="font-size:10px;color:var(--text-3);">T</div><div style="font-size:10px;color:var(--text-3);">W</div><div style="font-size:10px;color:var(--text-3);">T</div><div style="font-size:10px;color:var(--text-3);">F</div><div style="font-size:10px;color:var(--text-3);">S</div><div style="font-size:10px;color:var(--text-3);">S</div>
+        <div style="height:28px;background:rgba(56,189,248,.2);border-radius:6px;font-size:11px;display:flex;align-items:center;justify-content:center;color:var(--sky-deeper);">✓</div>
+        <div style="height:28px;background:rgba(148,163,184,.1);border-radius:6px;"></div>
+        <div style="height:28px;background:rgba(56,189,248,.2);border-radius:6px;font-size:11px;display:flex;align-items:center;justify-content:center;color:var(--sky-deeper);">✓</div>
+        <div style="height:28px;background:rgba(56,189,248,.2);border-radius:6px;font-size:11px;display:flex;align-items:center;justify-content:center;color:var(--sky-deeper);">✓</div>
+        <div style="height:28px;background:rgba(56,189,248,.2);border-radius:6px;font-size:11px;display:flex;align-items:center;justify-content:center;color:var(--sky-deeper);">✓</div>
+        <div style="height:28px;background:rgba(148,163,184,.1);border-radius:6px;"></div>
+        <div style="height:28px;background:rgba(148,163,184,.1);border-radius:6px;"></div>
+      </div>
+    </div>
+    <!-- Reviews -->
+    <div>
+      <div style="font-size:13px;font-weight:600;color:var(--sky-dark);margin-bottom:10px;">REVIEWS</div>
+      <div class="glass-card" style="padding:14px 16px;margin-bottom:8px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <div style="display:flex;align-items:center;gap:8px;"><img src="https://i.pravatar.cc/30?img=33" style="width:28px;height:28px;border-radius:50%;" alt=""><span style="font-size:13px;font-weight:600;color:var(--text);">Alex M.</span></div>
+          <div style="display:flex;gap:2px;"><span class="star"><i class="fas fa-star"></i></span><span class="star"><i class="fas fa-star"></i></span><span class="star"><i class="fas fa-star"></i></span><span class="star"><i class="fas fa-star"></i></span><span class="star"><i class="fas fa-star"></i></span></div>
+        </div>
+        <p style="font-size:13px;color:var(--text-2);line-height:1.5;">"Sarah is an incredible tutor. My grades went from a C to an A* in just 3 months!"</p>
+      </div>
+      <div class="glass-card" style="padding:14px 16px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <div style="display:flex;align-items:center;gap:8px;"><img src="https://i.pravatar.cc/30?img=15" style="width:28px;height:28px;border-radius:50%;" alt=""><span style="font-size:13px;font-weight:600;color:var(--text);">Emma K.</span></div>
+          <div style="display:flex;gap:2px;"><span class="star"><i class="fas fa-star"></i></span><span class="star"><i class="fas fa-star"></i></span><span class="star"><i class="fas fa-star"></i></span><span class="star"><i class="fas fa-star"></i></span><span class="star empty"><i class="far fa-star"></i></span></div>
+        </div>
+        <p style="font-size:13px;color:var(--text-2);line-height:1.5;">"Very patient and explains things clearly. Highly recommend for A-level students."</p>
+      </div>
+    </div>
+  </div>
+  <!-- Sticky bottom action -->
+  <div style="position:absolute;bottom:0;left:0;right:0;padding:12px 18px 28px;background:rgba(255,255,255,.9);backdrop-filter:blur(16px);border-top:1px solid rgba(148,163,184,.15);display:flex;gap:10px;">
+    <button class="btn btn-secondary btn-sm" style="flex:1;" onclick="showScreen('student-discover')"<i class="fas fa-xmark"></i> Pass</button>
+    <button class="btn btn-primary btn-sm" style="flex:2;" onclick="triggerSwipe('right','student')"<i class="fas fa-heart"></i> Connect</button>
+  </div>
+</div>
+
+<!-- ═══ STUDENT PROFILE EDIT ═══ -->
+<div class="screen" id="student-profile-edit">
+  <div class="status-bar"><span class="time">9:41</span><div class="icons"><span><i class="fas fa-signal"></i></span><span><i class="fas fa-battery-full"></i></span></div></div>
+  <div class="top-bar"><div class="back-btn" onclick="goBack()"><i class="fas fa-arrow-left"></i></div><h2>My Profile</h2><span class="chip chip-sky">Free</span></div>
+  <div style="padding:0 18px 12px;display:flex;align-items:center;gap:14px;">
+    <div style="position:relative;">
+      <img src="https://i.pravatar.cc/100?img=33" style="width:72px;height:72px;border-radius:50%;border:3px solid var(--sky);" alt="">
+      <div style="position:absolute;bottom:0;right:0;width:24px;height:24px;background:var(--sky);border-radius:50%;border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer;color:#fff;"><i class="fas fa-pen"></i></div>
+    </div>
+    <div>
+      <div style="font-size:18px;font-weight:700;color:var(--text);">Alex Morgan</div>
+      <div style="font-size:13px;color:var(--text-2);">Student · London, UK</div>
+      <div style="font-size:12px;color:var(--text-3);margin-top:2px;">Member since Jan 2025</div>
+    </div>
+  </div>
+  <div class="scroll-content" style="padding:0 18px 90px;display:flex;flex-direction:column;gap:12px;">
+    <div class="glass-card" style="padding:16px;display:flex;flex-direction:column;gap:12px;">
+      <div style="font-size:13px;font-weight:600;color:var(--sky-dark);">BASIC INFO</div>
+      <div class="input-group"><label>Display name</label><input class="input-field" value="Alex Morgan"></div>
+      <div class="input-group"><label>Primary subject</label><input class="input-field" value="Mathematics"></div>
+      <div class="input-group"><label>Location</label><input class="input-field" value="London, UK"></div>
+      <div class="input-group"><label>Short bio</label><textarea class="input-field" rows="3" style="resize:none;">A-level student looking for qualified tutors in Maths and Physics.</textarea></div>
+    </div>
+    <div class="glass-card" style="padding:16px;display:flex;flex-direction:column;gap:10px;">
+      <div style="font-size:13px;font-weight:600;color:var(--sky-dark);">SUBJECTS NEEDED</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;">
+        <span class="chip chip-sky">Mathematics <i class="fas fa-xmark"></i></span><span class="chip chip-sky">Physics <i class="fas fa-xmark"></i></span>
+        <span class="chip" style="background:rgba(148,163,184,.1);color:var(--text-2);cursor:pointer;">+ Add subject</span>
+      </div>
+    </div>
+    <button class="btn btn-primary">Save Changes</button>
+  </div>
+  <nav class="bottom-nav">
+    <div class="nav-item" data-nav="discover" onclick="showScreen('student-discover')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span>Discover</span></div>
+    <div class="nav-item" data-nav="matches" onclick="showScreen('student-matches')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg><span>Matches</span></div>
+    <div class="nav-item active" data-nav="profile"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Profile</span></div>
+    <div class="nav-item" data-nav="settings" onclick="showScreen('student-settings')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg><span>Settings</span></div>
+  </nav>
+</div>
+
+<!-- ═══ STUDENT SETTINGS ═══ -->
+<div class="screen" id="student-settings">
+  <div class="status-bar"><span class="time">9:41</span><div class="icons"><span><i class="fas fa-signal"></i></span><span><i class="fas fa-battery-full"></i></span></div></div>
+  <div class="top-bar"><h2>Settings</h2></div>
+  <div class="scroll-content" style="padding:0 18px 90px;display:flex;flex-direction:column;gap:14px;">
+    <!-- Premium CTA -->
+    <div style="background:linear-gradient(135deg,#0C4A6E,#0369A1);border-radius:var(--radius);padding:20px;position:relative;overflow:hidden;">
+      <div style="position:absolute;top:-20px;right:-20px;width:120px;height:120px;background:rgba(56,189,248,.15);border-radius:50%;"></div>
+      <div style="font-size:13px;color:rgba(186,230,253,.7);margin-bottom:4px;">Current plan</div>
+      <div style="font-size:22px;font-weight:800;color:#fff;margin-bottom:4px;">Free Tier</div>
+      <div style="font-size:13px;color:rgba(186,230,253,.7);margin-bottom:16px;">20 right swipes per day</div>
+      <button class="btn btn-primary btn-sm" onclick="showScreen('student-settings')" style="background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.35);backdrop-filter:blur(8px);"<i class="fas fa-star"></i> Upgrade to Premium</button>
+    </div>
+    <!-- Tiers -->
+    <div style="font-size:13px;font-weight:600;color:var(--text-2);margin-bottom:-6px;">Premium Plans</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div class="glass-card" style="padding:14px;text-align:center;cursor:pointer;">
+        <div style="font-size:11px;color:var(--text-3);margin-bottom:4px;">MONTHLY</div>
+        <div style="font-size:22px;font-weight:800;color:var(--text);">£9.99</div>
+        <div style="font-size:11px;color:var(--text-3);">/month</div>
+      </div>
+      <div style="background:linear-gradient(135deg,rgba(56,189,248,.15),rgba(14,165,233,.1));border:2px solid var(--sky);border-radius:var(--radius);padding:14px;text-align:center;position:relative;cursor:pointer;">
+        <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--sky);border-radius:50px;padding:2px 10px;font-size:10px;font-weight:700;color:#fff;white-space:nowrap;">BEST VALUE</div>
+        <div style="font-size:11px;color:var(--text-3);margin-bottom:4px;">6 MONTHS</div>
+        <div style="font-size:22px;font-weight:800;color:var(--sky-dark);">£7.99</div>
+        <div style="font-size:11px;color:var(--text-3);">/month</div>
+      </div>
+      <div class="glass-card" style="padding:14px;text-align:center;cursor:pointer;">
+        <div style="font-size:11px;color:var(--text-3);margin-bottom:4px;">3 MONTHS</div>
+        <div style="font-size:22px;font-weight:800;color:var(--text);">£8.99</div>
+        <div style="font-size:11px;color:var(--text-3);">/month</div>
+      </div>
+      <div class="glass-card" style="padding:14px;text-align:center;cursor:pointer;">
+        <div style="font-size:11px;color:var(--text-3);margin-bottom:4px;">ANNUAL</div>
+        <div style="font-size:22px;font-weight:800;color:var(--text);">£6.99</div>
+        <div style="font-size:11px;color:var(--text-3);">/month</div>
+      </div>
+    </div>
+    <!-- Settings rows -->
+    <div class="glass-card" style="overflow:hidden;">
+      <div style="padding:14px 16px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;border-bottom:1px solid rgba(148,163,184,.1);">
+        <span style="font-size:14px;color:var(--text);">Notifications</span><span style="color:var(--text-3);">›</span>
+      </div>
+      <div style="padding:14px 16px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;border-bottom:1px solid rgba(148,163,184,.1);">
+        <span style="font-size:14px;color:var(--text);">Discovery preferences</span><span style="color:var(--text-3);">›</span>
+      </div>
+      <div style="padding:14px 16px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;border-bottom:1px solid rgba(148,163,184,.1);">
+        <span style="font-size:14px;color:var(--text);">Privacy &amp; safety</span><span style="color:var(--text-3);">›</span>
+      </div>
+      <div style="padding:14px 16px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;">
+        <span style="font-size:14px;color:#EF4444;">Log out</span>
+      </div>
+    </div>
+  </div>
+  <nav class="bottom-nav">
+    <div class="nav-item" data-nav="discover" onclick="showScreen('student-discover')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span>Discover</span></div>
+    <div class="nav-item" data-nav="matches" onclick="showScreen('student-matches')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg><span>Matches</span></div>
+    <div class="nav-item" data-nav="profile" onclick="showScreen('student-profile-edit')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Profile</span></div>
+    <div class="nav-item active" data-nav="settings"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg><span>Settings</span></div>
+  </nav>
+</div>
+
+
+<!-- ═══ TEACHER DISCOVER ═══ -->
+<div class="screen" id="teacher-discover">
+  <div class="status-bar"><span class="time">9:41</span><div class="icons"><span><i class="fas fa-signal"></i></span><span><i class="fas fa-battery-full"></i></span></div></div>
+  <div class="top-bar">
+    <div style="flex:1;">
+      <div style="font-size:12px;color:var(--text-3);font-weight:500;">London, UK</div>
+      <h2 style="font-size:22px;">Discover</h2>
+    </div>
+    <div class="icon-btn" onclick="showScreen('institution-notifications')" style="position:relative;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+    </div>
+  </div>
+  <!-- Tab: Students vs Jobs -->
+  <div style="padding:0 18px 10px;display:flex;gap:6px;">
+    <button id="td-tab-students" onclick="setTeacherDiscoverTab('students')" style="flex:1;padding:8px;border-radius:50px;font-size:13px;font-weight:600;border:none;cursor:pointer;background:var(--sky);color:#fff;transition:.2s;"<i class="fas fa-user-graduate"></i> Students</button>
+    <button id="td-tab-jobs" onclick="setTeacherDiscoverTab('jobs')" style="flex:1;padding:8px;border-radius:50px;font-size:13px;font-weight:600;border:none;cursor:pointer;background:rgba(148,163,184,.12);color:var(--text-2);transition:.2s;"<i class="fas fa-building-columns"></i> Job Cards</button>
+  </div>
+  <!-- Swipe stack — students -->
+  <div id="td-students-stack" style="flex:1;position:relative;overflow:hidden;margin:0 18px;">
+    <div class="swipe-card" style="position:absolute;inset:0;transform:scale(0.90) translateY(-16px);z-index:1;pointer-events:none;">
+      <div style="height:100%;border-radius:var(--radius);overflow:hidden;background:#fff;box-shadow:var(--shadow);">
+        <img src="https://i.pravatar.cc/400?img=20" style="width:100%;height:55%;object-fit:cover;" alt="">
+        <div style="padding:14px;"><div style="font-size:16px;font-weight:700;">Liam Foster</div><div style="font-size:13px;color:var(--text-2);">A-level Physics · Year 12</div></div>
+      </div>
+    </div>
+    <div class="swipe-card" style="position:absolute;inset:0;transform:scale(0.95) translateY(-8px);z-index:2;pointer-events:none;">
+      <div style="height:100%;border-radius:var(--radius);overflow:hidden;background:#fff;box-shadow:var(--shadow);">
+        <img src="https://i.pravatar.cc/400?img=26" style="width:100%;height:55%;object-fit:cover;" alt="">
+        <div style="padding:14px;"><div style="font-size:16px;font-weight:700;">Olivia Brown</div><div style="font-size:13px;color:var(--text-2);">GCSE Maths · Year 10</div></div>
+      </div>
+    </div>
+    <div class="swipe-card draggable" id="top-card-teacher" style="position:absolute;inset:0;z-index:3;cursor:grab;touch-action:none;">
+      <div class="like-stamp" style="position:absolute;top:50px;left:20px;z-index:10;opacity:0;transform:rotate(-15deg);border:4px solid #22C55E;border-radius:8px;padding:6px 14px;font-size:24px;font-weight:900;color:#22C55E;pointer-events:none;">LIKE</div>
+      <div class="pass-stamp" style="position:absolute;top:50px;right:20px;z-index:10;opacity:0;transform:rotate(15deg);border:4px solid #EF4444;border-radius:8px;padding:6px 14px;font-size:24px;font-weight:900;color:#EF4444;pointer-events:none;">PASS</div>
+      <div style="height:100%;border-radius:var(--radius);overflow:hidden;background:#fff;box-shadow:0 12px 40px rgba(14,165,233,.2);">
+        <div style="position:relative;">
+          <img src="https://i.pravatar.cc/400?img=33" style="width:100%;height:300px;object-fit:cover;" alt="Student">
+          <div style="position:absolute;inset:0;height:300px;background:linear-gradient(transparent 50%,rgba(15,23,42,.7));"></div>
+          <div style="position:absolute;bottom:12px;left:14px;right:14px;">
+            <div style="display:flex;gap:6px;"><span class="chip" style="background:rgba(56,189,248,.9);color:#fff;font-size:11px;">Maths</span><span class="chip" style="background:rgba(255,255,255,.2);color:#fff;font-size:11px;backdrop-filter:blur(4px);">A-Level</span></div>
+          </div>
+        </div>
+        <div style="padding:14px 16px;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+            <div><div style="font-size:20px;font-weight:800;color:var(--text);">Alex Morgan, 17</div><div style="font-size:13px;color:var(--text-2);"><i class="fas fa-location-dot"></i> 2.1 km · Year 12 Student</div></div>
+          </div>
+          <p style="font-size:13px;color:var(--text-2);margin-top:8px;line-height:1.5;">Struggling with A-level integration and differentiation. Looking for patient, experienced tutor.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Swipe stack — job cards (hidden by default) -->
+  <div id="td-jobs-stack" style="flex:1;position:relative;overflow:hidden;margin:0 18px;display:none;">
+    <div class="swipe-card" style="position:absolute;inset:0;transform:scale(0.90) translateY(-16px);z-index:1;pointer-events:none;">
+      <div style="height:100%;border-radius:var(--radius);overflow:hidden;background:#fff;box-shadow:var(--shadow);padding:20px;">
+        <div style="font-size:16px;font-weight:700;">Science Teacher</div><div style="font-size:13px;color:var(--text-2);">Kingsway Academy</div>
+      </div>
+    </div>
+    <div class="swipe-card draggable" style="position:absolute;inset:0;z-index:3;cursor:grab;touch-action:none;">
+      <div class="like-stamp" style="position:absolute;top:50px;left:20px;z-index:10;opacity:0;transform:rotate(-15deg);border:4px solid #22C55E;border-radius:8px;padding:6px 14px;font-size:24px;font-weight:900;color:#22C55E;pointer-events:none;">APPLY</div>
+      <div class="pass-stamp" style="position:absolute;top:50px;right:20px;z-index:10;opacity:0;transform:rotate(15deg);border:4px solid #EF4444;border-radius:8px;padding:6px 14px;font-size:24px;font-weight:900;color:#EF4444;pointer-events:none;">PASS</div>
+      <div style="height:100%;border-radius:var(--radius);overflow:hidden;background:linear-gradient(160deg,#0C4A6E,#0369A1);box-shadow:0 12px 40px rgba(14,165,233,.3);">
+        <div style="padding:24px 20px;height:100%;display:flex;flex-direction:column;gap:14px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;"><span class="chip" style="background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.2);">Full-time</span><span class="chip chip-green">Active</span></div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div style="width:56px;height:56px;background:rgba(255,255,255,.15);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:28px;color:#fff;"><i class="fas fa-building-columns"></i></div>
+            <div><div style="font-size:22px;font-weight:800;color:#fff;">Riverside Academy</div><div style="font-size:13px;color:rgba(186,230,253,.75);"><i class="fas fa-location-dot"></i> 4.5 km · London, SE1</div></div>
+          </div>
+          <div style="background:rgba(255,255,255,.08);border-radius:14px;padding:16px;border:1px solid rgba(255,255,255,.1);">
+            <div style="font-size:20px;font-weight:700;color:#fff;margin-bottom:4px;">Mathematics Teacher</div>
+            <div style="font-size:13px;color:rgba(186,230,253,.8);">KS3 &amp; KS4 · 30 hrs/week</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div style="background:rgba(255,255,255,.08);border-radius:12px;padding:12px;text-align:center;border:1px solid rgba(255,255,255,.1);"><div style="font-size:18px;font-weight:800;color:#fff;">£35–45K</div><div style="font-size:11px;color:rgba(186,230,253,.6);">Per year</div></div>
+            <div style="background:rgba(255,255,255,.08);border-radius:12px;padding:12px;text-align:center;border:1px solid rgba(255,255,255,.1);"><div style="font-size:18px;font-weight:800;color:#fff;">Sept 2025</div><div style="font-size:11px;color:rgba(186,230,253,.6);">Start date</div></div>
+          </div>
+          <p style="font-size:13px;color:rgba(186,230,253,.8);line-height:1.6;">We're looking for an enthusiastic Maths teacher with QTS and a passion for helping students achieve their best results.</p>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;"><span class="chip" style="background:rgba(56,189,248,.25);color:#BAE6FD;font-size:11px;">QTS Required</span><span class="chip" style="background:rgba(56,189,248,.25);color:#BAE6FD;font-size:11px;">DBS Check</span><span class="chip" style="background:rgba(56,189,248,.25);color:#BAE6FD;font-size:11px;">2+ Years exp.</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Action buttons -->
+  <div style="display:flex;justify-content:center;gap:18px;padding:14px 0 8px;">
+    <button onclick="triggerSwipe('left','teacher')" style="width:58px;height:58px;border-radius:50%;background:#fff;border:2px solid #FECACA;box-shadow:0 4px 16px rgba(239,68,68,.15);cursor:pointer;font-size:22px;color:#EF4444;"><i class="fas fa-xmark"></i></button>
+    <button style="width:46px;height:46px;border-radius:50%;background:#fff;border:2px solid var(--sky-light);box-shadow:0 4px 12px rgba(56,189,248,.15);cursor:pointer;font-size:16px;margin-top:6px;" onclick="showScreen('teacher-public-profile')">ℹ</button>
+    <button onclick="triggerSwipe('right','teacher')" style="width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,#38BDF8,#0EA5E9);border:none;box-shadow:0 4px 16px rgba(14,165,233,.35);cursor:pointer;font-size:22px;color:#fff;"><i class="fas fa-heart"></i></button>
+  </div>
+  <div style="padding-bottom:90px;text-align:center;font-size:12px;color:var(--text-3);">Swipe right to connect · left to pass</div>
+  <nav class="bottom-nav">
+    <div class="nav-item active" data-nav="discover"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span>Discover</span></div>
+    <div class="nav-item" data-nav="matches" onclick="showScreen('teacher-matches')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg><span>Matches</span></div>
+    <div class="nav-item" data-nav="profile" onclick="showScreen('teacher-profile-edit')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Profile</span></div>
+    <div class="nav-item" data-nav="settings" onclick="showScreen('teacher-settings')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg><span>Settings</span></div>
+  </nav>
+</div>
+
+<!-- ═══ TEACHER PROFILE EDIT ═══ -->
+<div class="screen" id="teacher-profile-edit">
+  <div class="status-bar"><span class="time">9:41</span><div class="icons"><span><i class="fas fa-signal"></i></span><span><i class="fas fa-battery-full"></i></span></div></div>
+  <div class="top-bar"><div class="back-btn" onclick="goBack()"><i class="fas fa-arrow-left"></i></div><h2>My Profile</h2><span class="chip chip-green">✓ Verified</span></div>
+  <!-- Avatar -->
+  <div style="padding:0 18px 12px;display:flex;align-items:center;gap:14px;">
+    <div style="position:relative;">
+      <img src="https://i.pravatar.cc/100?img=5" style="width:72px;height:72px;border-radius:50%;border:3px solid var(--sky);" alt="">
+      <div style="position:absolute;bottom:0;right:0;width:24px;height:24px;background:var(--sky);border-radius:50%;border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer;color:#fff;"><i class="fas fa-pen"></i></div>
+    </div>
+    <div>
+      <div style="font-size:18px;font-weight:700;color:var(--text);">Sarah Johnson</div>
+      <div style="font-size:13px;color:var(--text-2);">Teacher · London, UK · 4.9 <i class="fas fa-star" style="color:#F59E0B;font-size:12px;"></i></div>
+      <span class="chip chip-purple" style="margin-top:4px;font-size:11px;"><i class="fas fa-star"></i> Premium</span>
+    </div>
+  </div>
+  <!-- Tabs -->
+  <div style="display:flex;overflow-x:auto;padding:0 14px;gap:4px;scrollbar-width:none;flex-shrink:0;">
+    <button class="profile-tab active-tab" onclick="setProfileTab('bio')" style="padding:7px 14px;border-radius:50px;border:none;font-family:var(--font);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;background:var(--sky);color:#fff;transition:.2s;">Bio</button>
+    <button class="profile-tab" onclick="setProfileTab('gallery')" style="padding:7px 14px;border-radius:50px;border:none;font-family:var(--font);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;background:rgba(148,163,184,.1);color:var(--text-2);transition:.2s;">Gallery</button>
+    <button class="profile-tab" onclick="setProfileTab('quals')" style="padding:7px 14px;border-radius:50px;border:none;font-family:var(--font);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;background:rgba(148,163,184,.1);color:var(--text-2);transition:.2s;">Qualifications</button>
+    <button class="profile-tab" onclick="setProfileTab('exp')" style="padding:7px 14px;border-radius:50px;border:none;font-family:var(--font);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;background:rgba(148,163,184,.1);color:var(--text-2);transition:.2s;">Experience</button>
+    <button class="profile-tab" onclick="setProfileTab('schedule')" style="padding:7px 14px;border-radius:50px;border:none;font-family:var(--font);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;background:rgba(148,163,184,.1);color:var(--text-2);transition:.2s;">Schedule</button>
+    <button class="profile-tab" onclick="setProfileTab('videos')" style="padding:7px 14px;border-radius:50px;border:none;font-family:var(--font);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;background:rgba(148,163,184,.1);color:var(--text-2);transition:.2s;">Videos</button>
+  </div>
+  <!-- Tab contents -->
+  <div class="scroll-content" style="padding:12px 18px 90px;">
+    <div id="tab-bio" class="tab-content" style="display:flex;flex-direction:column;gap:12px;">
+      <div class="glass-card" style="padding:16px;display:flex;flex-direction:column;gap:12px;">
+        <div class="input-group"><label>Display name</label><input class="input-field" value="Sarah Johnson"></div>
+        <div class="input-group"><label>Location</label><input class="input-field" value="London, UK"></div>
+        <div class="input-group"><label>Primary subject</label><input class="input-field" value="Mathematics"></div>
+        <div class="input-group"><label>Hourly rate (£)</label><input class="input-field" value="35"></div>
+        <div class="input-group"><label>Bio</label><textarea class="input-field" rows="4" style="resize:none;">Experienced A-Level & GCSE Maths tutor with 5+ years. Patient and encouraging approach.</textarea></div>
+      </div>
+      <button class="btn btn-primary">Save Bio</button>
+    </div>
+    <div id="tab-gallery" class="tab-content" style="display:none;flex-direction:column;gap:12px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+        <img src="https://picsum.photos/120/120?random=10" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:12px;" alt="">
+        <img src="https://picsum.photos/120/120?random=11" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:12px;" alt="">
+        <img src="https://picsum.photos/120/120?random=12" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:12px;" alt="">
+        <div style="aspect-ratio:1;border:2.5px dashed rgba(56,189,248,.4);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;background:rgba(56,189,248,.04);">
+          <span style="font-size:24px;color:var(--sky);">+</span>
+          <span style="font-size:10px;color:var(--sky-dark);">Add photo</span>
+        </div>
+      </div>
+      <p style="font-size:12px;color:var(--text-3);text-align:center;">3 of 6 photos used</p>
+    </div>
+    <div id="tab-quals" class="tab-content" style="display:none;flex-direction:column;gap:10px;">
+      <div class="glass-card" style="padding:14px 16px;">
+        <div style="font-size:14px;font-weight:700;color:var(--text);">BSc Mathematics (First Class)</div>
+        <div style="font-size:13px;color:var(--text-2);margin-top:2px;">University College London · 2018</div>
+      </div>
+      <div class="glass-card" style="padding:14px 16px;">
+        <div style="font-size:14px;font-weight:700;color:var(--text);">PGCE Secondary Mathematics</div>
+        <div style="font-size:13px;color:var(--text-2);margin-top:2px;">King's College London · 2019</div>
+      </div>
+      <div class="glass-card" style="padding:14px 16px;">
+        <div style="font-size:14px;font-weight:700;color:var(--text);">QTS (Qualified Teacher Status)</div>
+        <div style="font-size:13px;color:var(--text-2);margin-top:2px;">DfE · 2019</div>
+      </div>
+      <button class="btn btn-secondary">+ Add Qualification</button>
+    </div>
+    <div id="tab-exp" class="tab-content" style="display:none;flex-direction:column;gap:10px;">
+      <div class="glass-card" style="padding:14px 16px;">
+        <div style="font-size:14px;font-weight:700;color:var(--text);">Mathematics Teacher</div>
+        <div style="font-size:13px;color:var(--sky-dark);font-weight:500;">Riverside Academy</div>
+        <div style="font-size:12px;color:var(--text-3);margin:2px 0 6px;">2020 – Present</div>
+        <p style="font-size:13px;color:var(--text-2);line-height:1.5;">Teaching KS3 and KS4 Mathematics. 95% pass rate with 60% achieving A/A*.</p>
+      </div>
+      <div class="glass-card" style="padding:14px 16px;">
+        <div style="font-size:14px;font-weight:700;color:var(--text);">Private Tutor</div>
+        <div style="font-size:13px;color:var(--sky-dark);font-weight:500;">Self-employed</div>
+        <div style="font-size:12px;color:var(--text-3);margin:2px 0 6px;">2019 – Present</div>
+        <p style="font-size:13px;color:var(--text-2);line-height:1.5;">1-to-1 tutoring for GCSE and A-level students. 120+ students taught.</p>
+      </div>
+      <button class="btn btn-secondary">+ Add Experience</button>
+    </div>
+    <div id="tab-schedule" class="tab-content" style="display:none;flex-direction:column;gap:10px;">
+      <p style="font-size:13px;color:var(--text-2);">Tap cells to toggle availability (4pm–8pm slots):</p>
+      <div class="glass-card" style="padding:14px;">
+        <div style="display:grid;grid-template-columns:auto repeat(7,1fr);gap:6px;align-items:center;">
+          <div></div>
+          <div style="font-size:11px;color:var(--text-3);text-align:center;">M</div><div style="font-size:11px;color:var(--text-3);text-align:center;">T</div><div style="font-size:11px;color:var(--text-3);text-align:center;">W</div><div style="font-size:11px;color:var(--text-3);text-align:center;">T</div><div style="font-size:11px;color:var(--text-3);text-align:center;">F</div><div style="font-size:11px;color:var(--text-3);text-align:center;">S</div><div style="font-size:11px;color:var(--text-3);text-align:center;">S</div>
+          <div style="font-size:10px;color:var(--text-3);">4pm</div>
+          <div style="height:28px;background:rgba(56,189,248,.2);border-radius:6px;cursor:pointer;" onclick="toggleSlot(this)"></div><div style="height:28px;background:rgba(148,163,184,.1);border-radius:6px;cursor:pointer;" onclick="toggleSlot(this)"></div><div style="height:28px;background:rgba(56,189,248,.2);border-radius:6px;cursor:pointer;" onclick="toggleSlot(this)"></div><div style="height:28px;background:rgba(56,189,248,.2);border-radius:6px;cursor:pointer;" onclick="toggleSlot(this)"></div><div style="height:28px;background:rgba(56,189,248,.2);border-radius:6px;cursor:pointer;" onclick="toggleSlot(this)"></div><div style="height:28px;background:rgba(148,163,184,.1);border-radius:6px;cursor:pointer;" onclick="toggleSlot(this)"></div><div style="height:28px;background:rgba(148,163,184,.1);border-radius:6px;cursor:pointer;" onclick="toggleSlot(this)"></div>
+          <div style="font-size:10px;color:var(--text-3);">5pm</div>
+          <div style="height:28px;background:rgba(56,189,248,.2);border-radius:6px;cursor:pointer;" onclick="toggleSlot(this)"></div><div style="height:28px;background:rgba(56,189,248,.2);border-radius:6px;cursor:pointer;" onclick="toggleSlot(this)"></div><div style="height:28px;background:rgba(148,163,184,.1);border-radius:6px;cursor:pointer;" onclick="toggleSlot(this)"></div><div style="height:28px;background:rgba(56,189,248,.2);border-radius:6px;cursor:pointer;" onclick="toggleSlot(this)"></div><div style="height:28px;background:rgba(56,189,248,.2);border-radius:6px;cursor:pointer;" onclick="toggleSlot(this)"></div><div style="height:28px;background:rgba(148,163,184,.1);border-radius:6px;cursor:pointer;" onclick="toggleSlot(this)"></div><div style="height:28px;background:rgba(148,163,184,.1);border-radius:6px;cursor:pointer;" onclick="toggleSlot(this)"></div>
+          <div style="font-size:10px;color:var(--text-3);">6pm</div>
+          <div style="height:28px;background:rgba(148,163,184,.1);border-radius:6px;cursor:pointer;" onclick="toggleSlot(this)"></div><div style="height:28px;background:rgba(56,189,248,.2);border-radius:6px;cursor:pointer;" onclick="toggleSlot(this)"></div><div style="height:28px;background:rgba(56,189,248,.2);border-radius:6px;cursor:pointer;" onclick="toggleSlot(this)"></div><div style="height:28px;background:rgba(148,163,184,.1);border-radius:6px;cursor:pointer;" onclick="toggleSlot(this)"></div><div style="height:28px;background:rgba(56,189,248,.2);border-radius:6px;cursor:pointer;" onclick="toggleSlot(this)"></div><div style="height:28px;background:rgba(148,163,184,.1);border-radius:6px;cursor:pointer;" onclick="toggleSlot(this)"></div><div style="height:28px;background:rgba(148,163,184,.1);border-radius:6px;cursor:pointer;" onclick="toggleSlot(this)"></div>
+        </div>
+        <div style="display:flex;gap:12px;margin-top:10px;align-items:center;justify-content:center;">
+          <div style="display:flex;gap:4px;align-items:center;"><div style="width:14px;height:14px;background:rgba(56,189,248,.2);border-radius:3px;"></div><span style="font-size:11px;color:var(--text-3);">Available</span></div>
+          <div style="display:flex;gap:4px;align-items:center;"><div style="width:14px;height:14px;background:rgba(148,163,184,.1);border-radius:3px;"></div><span style="font-size:11px;color:var(--text-3);">Unavailable</span></div>
+        </div>
+      </div>
+      <button class="btn btn-primary">Save Schedule</button>
+    </div>
+    <div id="tab-videos" class="tab-content" style="display:none;flex-direction:column;gap:12px;">
+      <p style="font-size:13px;color:var(--text-2);">Add YouTube, TikTok or Vimeo links for your intro videos.</p>
+      <div class="glass-card" style="padding:14px 16px;display:flex;align-items:center;gap:10px;">
+        <div style="width:56px;height:42px;background:#FF0000;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span style="color:#fff;font-size:16px;color:#fff;"><i class="fas fa-play"></i></span></div>
+        <div style="flex:1;min-width:0;"><div style="font-size:13px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">My Teaching Introduction</div><div style="font-size:11px;color:var(--text-3);">youtube.com/watch?v=...</div></div>
+        <span style="color:var(--text-3);cursor:pointer;"><i class="fas fa-xmark"></i></span>
+      </div>
+      <div class="input-group"><label>Add video URL</label><input class="input-field" placeholder="https://youtube.com/..."></div>
+      <button class="btn btn-secondary">+ Add Video</button>
+    </div>
+  </div>
+  <nav class="bottom-nav">
+    <div class="nav-item" data-nav="discover" onclick="showScreen('teacher-discover')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span>Discover</span></div>
+    <div class="nav-item" data-nav="matches" onclick="showScreen('teacher-matches')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg><span>Matches</span></div>
+    <div class="nav-item active" data-nav="profile"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Profile</span></div>
+    <div class="nav-item" data-nav="settings" onclick="showScreen('teacher-settings')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2"/></svg><span>Settings</span></div>
+  </nav>
+</div>
+
+<!-- ═══ TEACHER MATCHES ═══ -->
+<div class="screen" id="teacher-matches">
+  <div class="status-bar"><span class="time">9:41</span><div class="icons"><span><i class="fas fa-signal"></i></span><span><i class="fas fa-battery-full"></i></span></div></div>
+  <div class="top-bar"><h2>Matches</h2></div>
+  <div class="scroll-content" style="padding:0 18px 90px;display:flex;flex-direction:column;gap:14px;">
+    <div style="font-size:13px;font-weight:600;color:var(--text-2);">Students</div>
+    <div style="display:flex;flex-direction:column;gap:4px;">
+      <div class="glass-card" style="padding:14px 16px;display:flex;gap:12px;align-items:center;cursor:pointer;" onclick="showScreen('chat')">
+        <div style="position:relative;flex-shrink:0;"><img src="https://i.pravatar.cc/80?img=33" style="width:52px;height:52px;border-radius:50%;" alt=""><span style="position:absolute;bottom:0;right:0;width:14px;height:14px;background:#22C55E;border-radius:50%;border:2px solid #fff;"></span></div>
+        <div style="flex:1;"><div style="display:flex;justify-content:space-between;"><span style="font-size:15px;font-weight:700;color:var(--text);">Alex Morgan</span><span style="font-size:12px;color:var(--text-3);">5m</span></div><div style="font-size:13px;color:var(--text-2);">Thursday at 4pm works great! <i class="fas fa-hands-clapping" style="color:#F59E0B;"></i></div></div>
+        <span style="width:20px;height:20px;background:var(--sky-dark);border-radius:50%;font-size:11px;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;">1</span>
+      </div>
+      <div class="glass-card" style="padding:14px 16px;display:flex;gap:12px;align-items:center;cursor:pointer;margin-top:4px;" onclick="showScreen('chat')">
+        <img src="https://i.pravatar.cc/80?img=20" style="width:52px;height:52px;border-radius:50%;flex-shrink:0;" alt="">
+        <div style="flex:1;"><div style="display:flex;justify-content:space-between;"><span style="font-size:15px;font-weight:700;color:var(--text);">Liam Foster</span><span style="font-size:12px;color:var(--text-3);">2h</span></div><div style="font-size:13px;color:var(--text-3);">Can we start next week?</div></div>
+      </div>
+    </div>
+    <div style="font-size:13px;font-weight:600;color:var(--text-2);margin-top:4px;">Job Applications</div>
+    <div class="glass-card" style="padding:14px 16px;display:flex;gap:12px;align-items:center;">
+      <div style="width:52px;height:52px;background:linear-gradient(135deg,#0C4A6E,#0369A1);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;color:#fff;"><i class="fas fa-building-columns"></i></div>
+      <div style="flex:1;"><div style="font-size:15px;font-weight:700;color:var(--text);">Riverside Academy</div><div style="font-size:13px;color:var(--text-2);">Maths Teacher · Applied 2h ago</div></div>
+      <span class="chip chip-amber">Pending</span>
+    </div>
+  </div>
+  <nav class="bottom-nav">
+    <div class="nav-item" data-nav="discover" onclick="showScreen('teacher-discover')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span>Discover</span></div>
+    <div class="nav-item active" data-nav="matches"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg><span>Matches</span></div>
+    <div class="nav-item" data-nav="profile" onclick="showScreen('teacher-profile-edit')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Profile</span></div>
+    <div class="nav-item" data-nav="settings" onclick="showScreen('teacher-settings')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2"/></svg><span>Settings</span></div>
+  </nav>
+</div>
+
+<!-- ═══ TEACHER SETTINGS ═══ -->
+<div class="screen" id="teacher-settings">
+  <div class="status-bar"><span class="time">9:41</span><div class="icons"><span><i class="fas fa-signal"></i></span><span><i class="fas fa-battery-full"></i></span></div></div>
+  <div class="top-bar"><h2>Settings</h2></div>
+  <div class="scroll-content" style="padding:0 18px 90px;display:flex;flex-direction:column;gap:14px;">
+    <div style="background:linear-gradient(135deg,#3B0764,#6D28D9);border-radius:var(--radius);padding:20px;position:relative;overflow:hidden;">
+      <div style="position:absolute;top:-20px;right:-20px;width:120px;height:120px;background:rgba(139,92,246,.2);border-radius:50%;"></div>
+      <div style="font-size:13px;color:rgba(233,213,255,.7);margin-bottom:4px;">Current plan</div>
+      <div style="font-size:22px;font-weight:800;color:#fff;margin-bottom:2px;"<i class="fas fa-star"></i> Premium Teacher</div>
+      <div style="font-size:13px;color:rgba(233,213,255,.7);margin-bottom:16px;">Expires 10 Apr 2026</div>
+      <div class="chip" style="background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.2);">Featured badge active ✓</div>
+    </div>
+    <div class="glass-card" style="padding:16px;display:flex;justify-content:space-between;align-items:center;">
+      <div><div style="font-size:14px;font-weight:600;color:var(--text);"<i class="fas fa-star" style="color:#F59E0B;"></i> Featured Profile</div><div style="font-size:12px;color:var(--text-3);">Appear at top of discovery feed</div></div>
+      <div style="width:44px;height:26px;background:var(--sky);border-radius:13px;position:relative;cursor:pointer;"><div style="position:absolute;right:3px;top:3px;width:20px;height:20px;background:#fff;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,.15);"></div></div>
+    </div>
+    <div class="glass-card" style="overflow:hidden;">
+      <div style="padding:14px 16px;display:flex;justify-content:space-between;cursor:pointer;border-bottom:1px solid rgba(148,163,184,.1);"><span style="font-size:14px;color:var(--text);">Notification preferences</span><span style="color:var(--text-3);">›</span></div>
+      <div style="padding:14px 16px;display:flex;justify-content:space-between;cursor:pointer;border-bottom:1px solid rgba(148,163,184,.1);"><span style="font-size:14px;color:var(--text);">Discovery radius</span><span style="font-size:14px;color:var(--text-2);">20 km ›</span></div>
+      <div style="padding:14px 16px;display:flex;justify-content:space-between;cursor:pointer;"><span style="font-size:14px;color:#EF4444;">Log out</span></div>
+    </div>
+  </div>
+  <nav class="bottom-nav">
+    <div class="nav-item" data-nav="discover" onclick="showScreen('teacher-discover')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span>Discover</span></div>
+    <div class="nav-item" data-nav="matches" onclick="showScreen('teacher-matches')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg><span>Matches</span></div>
+    <div class="nav-item" data-nav="profile" onclick="showScreen('teacher-profile-edit')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Profile</span></div>
+    <div class="nav-item active" data-nav="settings"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2"/></svg><span>Settings</span></div>
+  </nav>
+</div>
+
+<!-- ═══ INSTITUTION PAYWALL ═══ -->
+<div class="screen" id="institution-paywall" style="background:linear-gradient(160deg,#0F172A 0%,#0C4A6E 60%,#075985 100%);">
+  <div class="status-bar" style=""><span class="time" style="color:#fff;">9:41</span><div class="icons" style="color:#fff;"><span><i class="fas fa-signal"></i></span><span><i class="fas fa-battery-full"></i></span></div></div>
+  <div style="flex:1;display:flex;flex-direction:column;padding:16px 22px 30px;overflow-y:auto;gap:16px;">
+    <div style="text-align:center;padding:10px 0 4px;">
+      <div style="font-size:40px;margin-bottom:8px;color:var(--sky);"><i class="fas fa-lock"></i></div>
+      <h2 style="font-size:26px;font-weight:900;color:#fff;line-height:1.2;">Institution Access</h2>
+      <p style="font-size:14px;color:rgba(186,230,253,.7);margin-top:8px;line-height:1.5;">Subscribe to post job cards, access your dashboard, and recruit qualified teachers.</p>
+    </div>
+    <!-- Features -->
+    <div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:var(--radius);padding:16px;display:flex;flex-direction:column;gap:10px;">
+      <div style="display:flex;align-items:center;gap:10px;"><span style="font-size:18px;color:var(--sky);"><i class="fas fa-clipboard-list"></i></span><span style="font-size:14px;color:#fff;">Post unlimited job cards</span></div>
+      <div style="display:flex;align-items:center;gap:10px;"><span style="font-size:18px;color:var(--sky);"><i class="fas fa-magnifying-glass"></i></span><span style="font-size:14px;color:#fff;">Search &amp; select teachers</span></div>
+      <div style="display:flex;align-items:center;gap:10px;"><span style="font-size:18px;color:var(--sky);"><i class="fas fa-comment-dots"></i></span><span style="font-size:14px;color:#fff;">Instant messaging with candidates</span></div>
+      <div style="display:flex;align-items:center;gap:10px;"><span style="font-size:18px;color:var(--sky);"><i class="fas fa-bell"></i></span><span style="font-size:14px;color:#fff;">Real-time application alerts</span></div>
+    </div>
+    <!-- Tiers -->
+    <div style="font-size:13px;font-weight:600;color:rgba(186,230,253,.6);">Choose a plan:</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:var(--radius-sm);padding:14px;text-align:center;cursor:pointer;" onclick="showScreen('institution-dashboard')">
+        <div style="font-size:11px;color:rgba(186,230,253,.6);margin-bottom:4px;">MONTHLY</div>
+        <div style="font-size:22px;font-weight:800;color:#fff;">£49</div>
+        <div style="font-size:11px;color:rgba(186,230,253,.5);">/month</div>
+      </div>
+      <div style="background:rgba(56,189,248,.15);border:2px solid var(--sky);border-radius:var(--radius-sm);padding:14px;text-align:center;cursor:pointer;position:relative;" onclick="showScreen('institution-dashboard')">
+        <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--sky);border-radius:50px;padding:2px 10px;font-size:10px;font-weight:700;color:#fff;white-space:nowrap;">BEST VALUE</div>
+        <div style="font-size:11px;color:rgba(186,230,253,.7);margin-bottom:4px;">6 MONTHS</div>
+        <div style="font-size:22px;font-weight:800;color:#fff;">£39</div>
+        <div style="font-size:11px;color:rgba(186,230,253,.5);">/month</div>
+      </div>
+      <div style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:var(--radius-sm);padding:14px;text-align:center;cursor:pointer;" onclick="showScreen('institution-dashboard')">
+        <div style="font-size:11px;color:rgba(186,230,253,.6);margin-bottom:4px;">3 MONTHS</div>
+        <div style="font-size:22px;font-weight:800;color:#fff;">£44</div>
+        <div style="font-size:11px;color:rgba(186,230,253,.5);">/month</div>
+      </div>
+      <div style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:var(--radius-sm);padding:14px;text-align:center;cursor:pointer;" onclick="showScreen('institution-dashboard')">
+        <div style="font-size:11px;color:rgba(186,230,253,.6);margin-bottom:4px;">ANNUAL</div>
+        <div style="font-size:22px;font-weight:800;color:#fff;">£29</div>
+        <div style="font-size:11px;color:rgba(186,230,253,.5);">/month</div>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="showScreen('institution-dashboard')">Subscribe &amp; Access Dashboard →</button>
+    <p style="text-align:center;font-size:11px;color:rgba(186,230,253,.4);">Cancel anytime · Secure payment via RevenueCat</p>
+  </div>
+</div>
+
+<!-- ═══ INSTITUTION DASHBOARD ═══ -->
+<div class="screen" id="institution-dashboard">
+  <div class="status-bar"><span class="time">9:41</span><div class="icons"><span><i class="fas fa-signal"></i></span><span><i class="fas fa-battery-full"></i></span></div></div>
+  <div class="top-bar">
+    <div style="flex:1;"><div style="font-size:12px;color:var(--text-3);">Riverside Academy</div><h2 style="font-size:22px;">Dashboard</h2></div>
+    <div class="icon-btn" onclick="showScreen('institution-notifications')" style="position:relative;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+      <span style="position:absolute;top:6px;right:6px;width:8px;height:8px;background:#EF4444;border-radius:50%;border:2px solid var(--sky-bg);"></span>
+    </div>
+  </div>
+  <!-- Stats -->
+  <div style="padding:0 18px 12px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+    <div class="glass-card" style="padding:12px;text-align:center;"><div style="font-size:22px;font-weight:800;color:var(--sky-dark);">3</div><div style="font-size:10px;color:var(--text-3);">Active Jobs</div></div>
+    <div class="glass-card" style="padding:12px;text-align:center;"><div style="font-size:22px;font-weight:800;color:var(--sky-dark);">18</div><div style="font-size:10px;color:var(--text-3);">Applicants</div></div>
+    <div class="glass-card" style="padding:12px;text-align:center;"><div style="font-size:22px;font-weight:800;color:var(--sky-dark);">5</div><div style="font-size:10px;color:var(--text-3);">Matched</div></div>
+  </div>
+  <div style="padding:0 18px 8px;display:flex;justify-content:space-between;align-items:center;">
+    <div style="font-size:14px;font-weight:600;color:var(--text);">Job Cards</div>
+    <button class="btn btn-primary btn-sm" onclick="showScreen('job-card-create')">+ Post Job</button>
+  </div>
+  <div class="scroll-content" style="padding:0 18px 90px;display:flex;flex-direction:column;gap:10px;">
+    <!-- Job card 1 -->
+    <div class="glass-card" style="padding:16px;cursor:pointer;" onclick="showScreen('job-card-detail')">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
+        <div><div style="font-size:16px;font-weight:700;color:var(--text);">Mathematics Teacher</div><div style="font-size:13px;color:var(--text-2);">KS3 &amp; KS4 · Full-time</div></div>
+        <span class="chip chip-green">Active</span>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+        <span class="chip chip-sky" style="font-size:11px;">£35–45K</span>
+        <span class="chip" style="background:rgba(148,163,184,.1);color:var(--text-2);font-size:11px;"><i class="fas fa-location-dot"></i> London, SE1</span>
+        <span class="chip" style="background:rgba(148,163,184,.1);color:var(--text-2);font-size:11px;">Sept 2025</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div style="display:flex;align-items:center;gap:-4px;"><img src="https://i.pravatar.cc/24?img=5" style="width:24px;height:24px;border-radius:50%;border:2px solid #fff;margin-right:-6px;" alt=""><img src="https://i.pravatar.cc/24?img=12" style="width:24px;height:24px;border-radius:50%;border:2px solid #fff;margin-right:-6px;" alt=""><img src="https://i.pravatar.cc/24?img=18" style="width:24px;height:24px;border-radius:50%;border:2px solid #fff;margin-right:-6px;" alt=""><span style="font-size:12px;color:var(--text-2);margin-left:12px;">8 applicants</span></div>
+        <div style="display:flex;gap:8px;"><span style="font-size:12px;color:var(--sky-dark);cursor:pointer;">Edit</span><span style="font-size:12px;color:var(--text-3);cursor:pointer;">Close</span></div>
+      </div>
+    </div>
+    <!-- Job card 2 -->
+    <div class="glass-card" style="padding:16px;cursor:pointer;" onclick="showScreen('job-card-detail')">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
+        <div><div style="font-size:16px;font-weight:700;color:var(--text);">English Teacher</div><div style="font-size:13px;color:var(--text-2);">GCSE · Part-time</div></div>
+        <span class="chip chip-green">Active</span>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+        <span class="chip chip-sky" style="font-size:11px;">£18–22K</span>
+        <span class="chip" style="background:rgba(148,163,184,.1);color:var(--text-2);font-size:11px;"><i class="fas fa-location-dot"></i> London, SE1</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:12px;color:var(--text-2);">5 applicants</span><div style="display:flex;gap:8px;"><span style="font-size:12px;color:var(--sky-dark);cursor:pointer;">Edit</span><span style="font-size:12px;color:var(--text-3);cursor:pointer;">Close</span></div></div>
+    </div>
+    <!-- Job card 3 (draft) -->
+    <div class="glass-card" style="padding:16px;opacity:.7;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div><div style="font-size:16px;font-weight:700;color:var(--text);">Science Teacher</div><div style="font-size:13px;color:var(--text-2);">KS4 · Full-time</div></div>
+        <span class="chip chip-amber">Draft</span>
+      </div>
+      <div style="margin-top:10px;font-size:12px;color:var(--text-3);">Not yet published</div>
+    </div>
+  </div>
+  <nav class="bottom-nav">
+    <div class="nav-item active" data-nav="discover"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Dashboard</span></div>
+    <div class="nav-item" data-nav="matches" onclick="showScreen('teacher-matches')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg><span>Matches</span></div>
+    <div class="nav-item" data-nav="profile" onclick="showScreen('teacher-profile-edit')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Profile</span></div>
+    <div class="nav-item" data-nav="settings" onclick="showScreen('teacher-settings')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2"/></svg><span>Settings</span></div>
+  </nav>
+</div>
+
+<!-- ═══ JOB CARD CREATE ═══ -->
+<div class="screen" id="job-card-create">
+  <div class="status-bar"><span class="time">9:41</span><div class="icons"><span><i class="fas fa-signal"></i></span><span><i class="fas fa-battery-full"></i></span></div></div>
+  <div class="top-bar"><div class="back-btn" onclick="goBack()"><i class="fas fa-arrow-left"></i></div><h2>Post a Job</h2></div>
+  <div class="scroll-content" style="padding:0 18px 100px;display:flex;flex-direction:column;gap:12px;">
+    <div class="glass-card" style="padding:16px;display:flex;flex-direction:column;gap:12px;">
+      <div class="input-group"><label>Job title</label><input class="input-field" placeholder="e.g. Mathematics Teacher"></div>
+      <div class="input-group"><label>Subject</label>
+        <select class="input-field" style="appearance:none;"><option>Mathematics</option><option>English</option><option>Science</option><option>History</option><option>Geography</option></select>
+      </div>
+      <div class="input-group"><label>Level / Key Stage</label><input class="input-field" placeholder="e.g. KS3 & KS4, A-Level"></div>
+      <div class="input-group"><label>Contract type</label>
+        <select class="input-field" style="appearance:none;"><option>Full-time</option><option>Part-time</option><option>Contract</option><option>Supply</option></select>
+      </div>
+    </div>
+    <div class="glass-card" style="padding:16px;display:flex;flex-direction:column;gap:12px;">
+      <div style="font-size:13px;font-weight:600;color:var(--sky-dark);">COMPENSATION</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div class="input-group"><label>Min salary (£)</label><input class="input-field" placeholder="35000"></div>
+        <div class="input-group"><label>Max salary (£)</label><input class="input-field" placeholder="45000"></div>
+      </div>
+      <div class="input-group"><label>Start date</label><input class="input-field" type="date"></div>
+    </div>
+    <div class="glass-card" style="padding:16px;display:flex;flex-direction:column;gap:12px;">
+      <div class="input-group"><label>Job description</label><textarea class="input-field" rows="5" style="resize:none;" placeholder="Describe the role, requirements, and what makes your school special..."></textarea></div>
+      <div class="input-group"><label>Intro video URL (optional)</label><input class="input-field" placeholder="https://youtube.com/..."></div>
+    </div>
+  </div>
+  <div style="position:absolute;bottom:0;left:0;right:0;padding:12px 18px 36px;background:rgba(255,255,255,.9);backdrop-filter:blur(16px);border-top:1px solid rgba(148,163,184,.1);display:flex;gap:10px;">
+    <button class="btn btn-secondary btn-sm" style="flex:1;">Save Draft</button>
+    <button class="btn btn-primary btn-sm" style="flex:2;" onclick="showScreen('institution-dashboard')">Publish Job Card →</button>
+  </div>
+</div>
+
+<!-- ═══ JOB CARD DETAIL ═══ -->
+<div class="screen" id="job-card-detail">
+  <div class="status-bar"><span class="time">9:41</span><div class="icons"><span><i class="fas fa-signal"></i></span><span><i class="fas fa-battery-full"></i></span></div></div>
+  <div class="top-bar"><div class="back-btn" onclick="goBack()"><i class="fas fa-arrow-left"></i></div><h2>Mathematics Teacher</h2></div>
+  <div class="scroll-content" style="padding:0 18px 90px;display:flex;flex-direction:column;gap:14px;">
+    <div class="glass-card" style="padding:16px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:10px;"><div><div style="font-size:18px;font-weight:800;color:var(--text);">Mathematics Teacher</div><div style="font-size:13px;color:var(--text-2);">Riverside Academy · London, SE1</div></div><span class="chip chip-green">Active</span></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <span class="chip chip-sky" style="font-size:11px;">£35–45K/yr</span><span class="chip" style="background:rgba(148,163,184,.1);color:var(--text-2);font-size:11px;">Full-time</span><span class="chip" style="background:rgba(148,163,184,.1);color:var(--text-2);font-size:11px;">KS3 &amp; KS4</span><span class="chip" style="background:rgba(148,163,184,.1);color:var(--text-2);font-size:11px;">Sept 2025</span>
+      </div>
+    </div>
+    <div class="glass-card" style="padding:16px;">
+      <div style="font-size:13px;font-weight:600;color:var(--sky-dark);margin-bottom:8px;">DESCRIPTION</div>
+      <p style="font-size:14px;color:var(--text-2);line-height:1.65;">We're looking for an enthusiastic Maths teacher with QTS to join our vibrant team. You'll teach KS3 and KS4 classes with the opportunity to take A-level groups. We offer CPD support and a collaborative working environment.</p>
+    </div>
+    <!-- Applicants -->
+    <div>
+      <div style="font-size:13px;font-weight:600;color:var(--text-2);margin-bottom:10px;">APPLICANTS (8)</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div class="glass-card" style="padding:12px 14px;display:flex;gap:10px;align-items:center;">
+          <img src="https://i.pravatar.cc/60?img=5" style="width:46px;height:46px;border-radius:50%;flex-shrink:0;" alt="">
+          <div style="flex:1;"><div style="font-size:14px;font-weight:700;color:var(--text);">Sarah Johnson</div><div style="font-size:12px;color:var(--text-2);">Maths · 5 yrs exp · 4.9 <i class="fas fa-star" style="color:#F59E0B;font-size:12px;"></i></div></div>
+          <div style="display:flex;gap:6px;">
+            <button class="btn btn-secondary btn-sm" style="padding:6px 10px;font-size:12px;" onclick="showScreen('teacher-public-profile')">Profile</button>
+            <button class="btn btn-primary btn-sm" style="padding:6px 10px;font-size:12px;" onclick="showScreen('chat')">Chat</button>
+          </div>
+        </div>
+        <div class="glass-card" style="padding:12px 14px;display:flex;gap:10px;align-items:center;">
+          <img src="https://i.pravatar.cc/60?img=44" style="width:46px;height:46px;border-radius:50%;flex-shrink:0;" alt="">
+          <div style="flex:1;"><div style="font-size:14px;font-weight:700;color:var(--text);">James Williams</div><div style="font-size:12px;color:var(--text-2);">Maths &amp; Physics · 3 yrs · 4.7 <i class="fas fa-star" style="color:#F59E0B;font-size:12px;"></i></div></div>
+          <div style="display:flex;gap:6px;">
+            <button class="btn btn-secondary btn-sm" style="padding:6px 10px;font-size:12px;">Profile</button>
+            <button class="btn btn-primary btn-sm" style="padding:6px 10px;font-size:12px;" onclick="showScreen('chat')">Chat</button>
+          </div>
+        </div>
+        <div style="text-align:center;padding:10px;font-size:13px;color:var(--sky-dark);cursor:pointer;font-weight:500;">View all 8 applicants →</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ NOTIFICATIONS (shared / institution) ═══ -->
+<div class="screen" id="institution-notifications">
+  <div class="status-bar"><span class="time">9:41</span><div class="icons"><span><i class="fas fa-signal"></i></span><span><i class="fas fa-battery-full"></i></span></div></div>
+  <div class="top-bar"><div class="back-btn" onclick="goBack()"><i class="fas fa-arrow-left"></i></div><h2>Notifications</h2></div>
+  <div class="scroll-content" style="padding:0 18px 90px;display:flex;flex-direction:column;gap:4px;">
+    <!-- Today -->
+    <div style="font-size:12px;font-weight:600;color:var(--text-3);padding:4px 2px 8px;">TODAY</div>
+    <div class="glass-card" style="padding:14px 16px;display:flex;gap:12px;align-items:flex-start;cursor:pointer;border-left:3px solid var(--sky);" onclick="showScreen('job-card-detail')">
+      <div style="width:42px;height:42px;background:linear-gradient(135deg,var(--sky),var(--sky-dark));border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;color:#fff;"><i class="fas fa-envelope"></i></div>
+      <div style="flex:1;">
+        <div style="font-size:14px;font-weight:600;color:var(--text);">New Application</div>
+        <div style="font-size:13px;color:var(--text-2);margin-top:2px;line-height:1.4;"><strong>Sarah Johnson</strong> applied to your <strong>Mathematics Teacher</strong> role.</div>
+        <div style="font-size:11px;color:var(--text-3);margin-top:4px;">2 minutes ago</div>
+      </div>
+    </div>
+    <div class="glass-card" style="padding:14px 16px;display:flex;gap:12px;align-items:flex-start;cursor:pointer;border-left:3px solid var(--sky);margin-top:4px;" onclick="showScreen('match-popup')">
+      <div style="width:42px;height:42px;background:linear-gradient(135deg,#F472B6,#EC4899);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;color:#fff;"><i class="fas fa-heart"></i></div>
+      <div style="flex:1;">
+        <div style="font-size:14px;font-weight:600;color:var(--text);">New Match!</div>
+        <div style="font-size:13px;color:var(--text-2);margin-top:2px;line-height:1.4;">You matched with <strong>James Williams</strong> for the Physics role.</div>
+        <div style="font-size:11px;color:var(--text-3);margin-top:4px;">15 minutes ago</div>
+      </div>
+    </div>
+    <div style="font-size:12px;font-weight:600;color:var(--text-3);padding:12px 2px 8px;">YESTERDAY</div>
+    <div class="glass-card" style="padding:14px 16px;display:flex;gap:12px;align-items:flex-start;cursor:pointer;opacity:.7;" onclick="showScreen('job-card-detail')">
+      <div style="width:42px;height:42px;background:rgba(148,163,184,.15);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;color:#fff;"><i class="fas fa-envelope"></i></div>
+      <div style="flex:1;">
+        <div style="font-size:14px;font-weight:600;color:var(--text);">New Application</div>
+        <div style="font-size:13px;color:var(--text-2);margin-top:2px;line-height:1.4;"><strong>Priya Sharma</strong> applied to your <strong>English Teacher</strong> role.</div>
+        <div style="font-size:11px;color:var(--text-3);margin-top:4px;">Yesterday, 4:32 pm</div>
+      </div>
+    </div>
+    <div class="glass-card" style="padding:14px 16px;display:flex;gap:12px;align-items:flex-start;cursor:pointer;opacity:.7;margin-top:4px;">
+      <div style="width:42px;height:42px;background:rgba(148,163,184,.15);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;color:#F59E0B;"><i class="fas fa-star"></i></div>
+      <div style="flex:1;">
+        <div style="font-size:14px;font-weight:600;color:var(--text);">New Review</div>
+        <div style="font-size:13px;color:var(--text-2);margin-top:2px;line-height:1.4;">A student left a 5-star review for a matched teacher.</div>
+        <div style="font-size:11px;color:var(--text-3);margin-top:4px;">Yesterday, 9:15 am</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /phone-frame -->
+
+</div><!-- /prototype-view -->
+
+<script>
+// ═══════════════════════════════════
+// STATE
+// ═══════════════════════════════════
+let currentRole = 'student';
+let screenHistory = ['splash'];
+let selectedRole = null;
+
+// ═══════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════
+function showScreen(id, addHistory = true) {
+  const current = document.querySelector('.screen.active');
+  const next = document.getElementById(id);
+  if (!next || current === next) return;
+  if (addHistory && current) screenHistory.push(current.id);
+  current?.classList.remove('active');
+  next.classList.add('active');
+  updateBottomNav(id);
+}
+
+function goBack() {
+  if (screenHistory.length < 1) { backToIndex(); return; }
+  const prev = screenHistory.pop();
+  if (prev === 'index') { backToIndex(); return; }
+  const target = document.getElementById(prev);
+  if (!target) { backToIndex(); return; }
+  document.querySelector('.screen.active')?.classList.remove('active');
+  target.classList.add('active');
+  updateBottomNav(prev);
+}
+
+function updateBottomNav(screenId) {
+  const navMap = {
+    'student-discover':'discover','teacher-discover':'discover','institution-dashboard':'discover',
+    'student-matches':'matches','teacher-matches':'matches',
+    'student-profile-edit':'profile','teacher-profile-edit':'profile',
+    'student-settings':'settings','teacher-settings':'settings',
+  };
+  const active = navMap[screenId];
+  document.querySelectorAll('.nav-item').forEach(el => {
+    el.classList.toggle('active', !!active && el.dataset.nav === active);
+  });
+}
+
+// ═══════════════════════════════════
+// ROLE SWITCHER
+// ═══════════════════════════════════
+function switchRole(role) {
+  currentRole = role;
+  document.querySelectorAll('#role-switcher button').forEach(b => b.classList.remove('active'));
+  document.getElementById('btn-' + role).classList.add('active');
+  const dest = { student:'student-discover', teacher:'teacher-discover', institution:'institution-paywall' };
+  screenHistory = [];
+  showScreen(dest[role], false);
+}
+
+// ═══════════════════════════════════
+// REGISTER
+// ═══════════════════════════════════
+function selectRole(role) {
+  selectedRole = role;
+  document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('role-' + role)?.classList.add('selected');
+}
+
+function handleRoleContinue() {
+  if (!selectedRole) selectRole('student');
+  showScreen('register-3');
+}
+
+function handleRegisterFinish() {
+  if (selectedRole === 'teacher') showScreen('cert-upload');
+  else if (selectedRole === 'institution') showScreen('institution-paywall');
+  else showScreen('student-discover');
+}
+
+function simulateCertUpload() {
+  document.getElementById('cert-file-preview').style.display = 'block';
+}
+
+// ═══════════════════════════════════
+// SWIPE ENGINE
+// ═══════════════════════════════════
+let swipeMatchCount = 0; // trigger match popup after 2 right swipes
+
+function initSwipe(card) {
+  if (!card || card.dataset.swipeInit) return;
+  card.dataset.swipeInit = '1';
+  let startX = 0, startY = 0, currentX = 0, isDragging = false;
+  const like = card.querySelector('.like-stamp');
+  const pass = card.querySelector('.pass-stamp');
+
+  function onStart(e) {
+    const pt = e.touches ? e.touches[0] : e;
+    startX = pt.clientX; startY = pt.clientY; isDragging = true;
+    card.style.transition = 'none';
+    card.style.cursor = 'grabbing';
+  }
+
+  function onMove(e) {
+    if (!isDragging) return;
+    e.preventDefault();
+    const pt = e.touches ? e.touches[0] : e;
+    currentX = pt.clientX - startX;
+    const rot = currentX / 18;
+    card.style.transform = `translateX(${currentX}px) rotate(${rot}deg)`;
+    const likeOp = Math.min(Math.max(currentX / 80, 0), 1);
+    const passOp = Math.min(Math.max(-currentX / 80, 0), 1);
+    if (like) like.style.opacity = likeOp;
+    if (pass) pass.style.opacity = passOp;
+  }
+
+  function onEnd() {
+    if (!isDragging) return;
+    isDragging = false;
+    card.style.cursor = 'grab';
+    if (Math.abs(currentX) > 90) {
+      const dir = currentX > 0 ? 'right' : 'left';
+      const flyX = dir === 'right' ? 700 : -700;
+      card.style.transition = 'transform 0.35s cubic-bezier(0.4,0,0.6,1), opacity 0.35s';
+      card.style.transform = `translateX(${flyX}px) rotate(${currentX > 0 ? 25 : -25}deg)`;
+      card.style.opacity = '0';
+      // Promote next cards
+      const stack = card.closest('[id$="-stack"], [id^="td-"]') || card.parentElement;
+      const cards = [...stack.querySelectorAll('.swipe-card')];
+      const idx = cards.indexOf(card);
+      if (idx > 0) {
+        cards[idx-1].style.transition = 'transform 0.3s ease';
+        cards[idx-1].style.transform = idx >= 2 ? 'scale(0.95) translateY(-8px)' : 'scale(1) translateY(0)';
+        cards[idx-1].style.pointerEvents = 'auto';
+        cards[idx-1].style.zIndex = '3';
+        if (idx >= 2 && cards[idx-2]) {
+          cards[idx-2].style.transition = 'transform 0.3s ease';
+          cards[idx-2].style.transform = 'scale(0.95) translateY(-8px)';
+        }
+      }
+      setTimeout(() => { card.remove(); }, 400);
+      if (dir === 'right') {
+        swipeMatchCount++;
+        if (swipeMatchCount % 2 === 0) {
+          setTimeout(() => showScreen('match-popup'), 450);
+        }
+      }
+    } else {
+      // Spring back
+      card.style.transition = 'transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275)';
+      card.style.transform = 'translateX(0) rotate(0deg)';
+      if (like) like.style.opacity = '0';
+      if (pass) pass.style.opacity = '0';
+    }
+    currentX = 0;
+  }
+
+  card.addEventListener('mousedown', onStart);
+  card.addEventListener('mousemove', onMove);
+  card.addEventListener('mouseup', onEnd);
+  card.addEventListener('mouseleave', onEnd);
+  card.addEventListener('touchstart', onStart, {passive:false});
+  card.addEventListener('touchmove', onMove, {passive:false});
+  card.addEventListener('touchend', onEnd);
+}
+
+// Programmatic swipe via buttons
+function triggerSwipe(dir, role) {
+  const cardId = role === 'student' ? 'top-card-student' : 'top-card-teacher';
+  const card = document.getElementById(cardId);
+  if (!card) return;
+  const flyX = dir === 'right' ? 700 : -700;
+  card.style.transition = 'transform 0.35s cubic-bezier(0.4,0,0.6,1), opacity 0.35s';
+  card.style.transform = `translateX(${flyX}px) rotate(${dir === 'right' ? 25 : -25}deg)`;
+  card.style.opacity = '0';
+  const like = card.querySelector('.like-stamp');
+  const pass = card.querySelector('.pass-stamp');
+  if (like) like.style.opacity = dir === 'right' ? '1' : '0';
+  if (pass) pass.style.opacity = dir === 'left' ? '1' : '0';
+  if (dir === 'right') {
+    swipeMatchCount++;
+    if (swipeMatchCount % 2 === 0) setTimeout(() => showScreen('match-popup'), 450);
+  }
+  setTimeout(() => { card.remove(); }, 400);
+}
+
+// Init all draggable cards on load + watch for new ones
+function initAllDraggable() {
+  document.querySelectorAll('.swipe-card.draggable').forEach(initSwipe);
+}
+initAllDraggable();
+
+// ═══════════════════════════════════
+// TEACHER DISCOVER TABS
+// ═══════════════════════════════════
+function setTeacherDiscoverTab(tab) {
+  const studentsStack = document.getElementById('td-students-stack');
+  const jobsStack = document.getElementById('td-jobs-stack');
+  const btnS = document.getElementById('td-tab-students');
+  const btnJ = document.getElementById('td-tab-jobs');
+  if (tab === 'students') {
+    studentsStack.style.display = 'block';
+    jobsStack.style.display = 'none';
+    btnS.style.background = 'var(--sky)'; btnS.style.color = '#fff';
+    btnJ.style.background = 'rgba(148,163,184,.12)'; btnJ.style.color = 'var(--text-2)';
+    // Re-init draggable in students stack
+    studentsStack.querySelectorAll('.swipe-card.draggable').forEach(initSwipe);
+  } else {
+    studentsStack.style.display = 'none';
+    jobsStack.style.display = 'block';
+    btnJ.style.background = 'var(--sky)'; btnJ.style.color = '#fff';
+    btnS.style.background = 'rgba(148,163,184,.12)'; btnS.style.color = 'var(--text-2)';
+    jobsStack.querySelectorAll('.swipe-card.draggable').forEach(initSwipe);
+  }
+}
+
+// ═══════════════════════════════════
+// TEACHER PROFILE TABS
+// ═══════════════════════════════════
+function setProfileTab(tab) {
+  document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('.profile-tab').forEach(el => {
+    el.style.background = 'rgba(148,163,184,.1)';
+    el.style.color = 'var(--text-2)';
+  });
+  const target = document.getElementById('tab-' + tab);
+  if (target) { target.style.display = 'flex'; }
+  // Highlight active tab
+  const tabs = document.querySelectorAll('.profile-tab');
+  const tabMap = {bio:0, gallery:1, quals:2, exp:3, schedule:4, videos:5};
+  const activeTab = tabs[tabMap[tab]];
+  if (activeTab) {
+    activeTab.style.background = 'var(--sky)';
+    activeTab.style.color = '#fff';
+  }
+}
+
+// ═══════════════════════════════════
+// SCHEDULE GRID TOGGLE
+// ═══════════════════════════════════
+function toggleSlot(el) {
+  const isActive = el.style.background.includes('56,189,248');
+  el.style.background = isActive ? 'rgba(148,163,184,.1)' : 'rgba(56,189,248,.2)';
+  el.style.transition = 'background .15s';
+}
+
+// ═══════════════════════════════════
+// TYPING ANIMATION (chat)
+// ═══════════════════════════════════
+const typingStyle = document.createElement('style');
+typingStyle.textContent = `
+  @keyframes typingDot {
+    0%,100%{opacity:.3;transform:translateY(0)}
+    50%{opacity:1;transform:translateY(-3px)}
+  }
+  @keyframes matchBounce {
+    0%,100%{transform:scale(1)}
+    50%{transform:scale(1.3)}
+  }
+`;
+document.head.appendChild(typingStyle);
+
+// ═══════════════════════════════════
+// INDEX ↔ PROTOTYPE NAVIGATION
+// ═══════════════════════════════════
+function goToScreen(id) {
+  document.getElementById('index-page').style.display = 'none';
+  const pv = document.getElementById('prototype-view');
+  pv.style.display = 'flex';
+  screenHistory = [];
+  showScreen(id, false);
+  document.getElementById('idx-back-btn').style.display = 'flex';
+}
+
+function backToIndex() {
+  document.getElementById('prototype-view').style.display = 'none';
+  document.getElementById('index-page').style.display = 'flex';
+  document.getElementById('idx-back-btn').style.display = 'none';
+}
+
+function filterIndex(cat, btn) {
+  document.querySelectorAll('.idx-filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const sections = {
+    auth: document.querySelector('.idx-section-cat-auth'),
+    student: document.querySelector('.idx-section-cat-student'),
+    teacher: document.querySelector('.idx-section-cat-teacher'),
+    institution: document.querySelector('.idx-section-cat-institution'),
+  };
+  if (cat === 'all') {
+    Object.values(sections).forEach(s => { if (s) s.style.display = ''; });
+  } else {
+    Object.entries(sections).forEach(([key, s]) => {
+      if (s) s.style.display = (key === cat) ? '' : 'none';
+    });
+  }
+}
+</script>
+<button id="idx-back-btn" title="Back to index" onclick="backToIndex()">
+  <i class="fas fa-th-large"></i> All screens
+</button>
+</body>
+</html>
