@@ -1,0 +1,13 @@
+{
+  "name": "edulinky-scripts",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "seed": "node seed.js",
+    "reset": "node reset.js"
+  },
+  "dependencies": {
+    "firebase-admin": "^13.0.0",
+    "geofire-common": "^6.0.0"
+  }
+}

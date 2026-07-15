@@ -1,0 +1,1249 @@
+{
+  "@@locale": "en",
+
+  "appName": "EduLinky",
+  "@appName": {},
+
+  "tagline": "Discover teachers, students & opportunities.",
+  "@tagline": {},
+
+  "getStarted": "Get Started",
+  "@getStarted": {},
+
+  "iAlreadyHaveAccount": "I already have an account",
+  "@iAlreadyHaveAccount": {},
+
+  "welcomeBack": "Welcome back",
+  "@welcomeBack": {},
+
+  "signInToContinue": "Sign in to continue to EduLinky",
+  "@signInToContinue": {},
+
+  "continueWithGoogle": "Continue with Google",
+  "@continueWithGoogle": {},
+
+  "fullName": "Full name",
+  "@fullName": {},
+
+  "fullNameHint": "e.g. Sarah Johnson",
+  "@fullNameHint": {},
+
+  "login": "Login",
+  "@login": {},
+
+  "continueWithEmail": "Continue with Email",
+  "@continueWithEmail": {},
+
+  "emailAddress": "Email address",
+  "@emailAddress": {},
+
+  "password": "Password",
+  "@password": {},
+
+  "forgotPassword": "Forgot password?",
+  "@forgotPassword": {},
+
+  "signIn": "Sign In",
+  "@signIn": {},
+
+  "noAccount": "Don't have an account?",
+  "@noAccount": {},
+
+  "signUp": "Sign up",
+  "@signUp": {},
+
+  "createAccount": "Create Account",
+  "@createAccount": {},
+
+  "stepOf": "Step {current} of {total}",
+  "@stepOf": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "total":   { "type": "int" }
+    }
+  },
+
+  "confirmPassword": "Confirm password",
+  "@confirmPassword": {},
+
+  "passwordsDoNotMatch": "Passwords do not match",
+  "@passwordsDoNotMatch": {},
+
+  "passwordTooShort": "Password must be at least 8 characters",
+  "@passwordTooShort": {},
+
+  "invalidEmail": "Enter a valid email address",
+  "@invalidEmail": {},
+
+  "fieldRequired": "This field is required",
+  "@fieldRequired": {},
+
+  "chooseYourRole": "I am a…",
+  "@chooseYourRole": {},
+
+  "chooseYourRoleSubtitle": "Step 2 of 3 — Choose your role. This cannot be changed later.",
+  "@chooseYourRoleSubtitle": {},
+
+  "roleStudent": "Student",
+  "@roleStudent": {},
+
+  "roleStudentDesc": "Find the right tutor or teacher for your learning goals",
+  "@roleStudentDesc": {},
+
+  "roleTeacher": "Teacher",
+  "@roleTeacher": {},
+
+  "roleTeacherDesc": "Connect with students and institutions seeking your expertise",
+  "@roleTeacherDesc": {},
+
+  "roleInstitution": "Institution",
+  "@roleInstitution": {},
+
+  "roleInstitutionDesc": "Post job openings and discover qualified educators",
+  "@roleInstitutionDesc": {},
+
+  "setUpProfile": "Your profile",
+  "@setUpProfile": {},
+
+  "cityLocation": "City / Location",
+  "@cityLocation": {},
+
+  "cityLocationHint": "e.g. London, UK",
+  "@cityLocationHint": {},
+
+  "primarySubject": "Primary subject",
+  "@primarySubject": {},
+
+  "primarySubjectHint": "e.g. Mathematics",
+  "@primarySubjectHint": {},
+
+  "createAccountBtn": "Create Account",
+  "@createAccountBtn": {},
+
+  "displayName": "Display name",
+  "@displayName": {},
+
+  "displayNameHint": "How others will see you",
+  "@displayNameHint": {},
+
+  "addProfilePhoto": "Add profile photo",
+  "@addProfilePhoto": {},
+
+  "changePhoto": "Change photo",
+  "@changePhoto": {},
+
+  "next": "Next",
+  "@next": {},
+
+  "back": "Back",
+  "@back": {},
+
+  "submit": "Submit",
+  "@submit": {},
+
+  "uploadCertification": "Upload Certification",
+  "@uploadCertification": {},
+
+  "uploadCertSubtitle": "Upload your teaching certificates or qualification documents. You can add more than one.",
+  "@uploadCertSubtitle": {},
+
+  "dragDropOrTap": "Tap to select your documents",
+  "@dragDropOrTap": {},
+
+  "supportedFormats": "Supported formats: PDF, JPG, PNG",
+  "@supportedFormats": {},
+
+  "fileSelected": "File selected",
+  "@fileSelected": {},
+
+  "submitForReview": "Submit for Review",
+  "@submitForReview": {},
+
+  "skipForNow": "Skip for now",
+  "@skipForNow": {},
+
+  "pendingVerificationTitle": "Under Review",
+  "@pendingVerificationTitle": {},
+
+  "pendingVerificationBody": "Your certification is being reviewed by our team. We'll notify you once it's approved.",
+  "@pendingVerificationBody": {},
+
+  "estimatedTime": "Estimated review time: 24–48 hours",
+  "@estimatedTime": {},
+
+  "goToDiscover": "Go to Discover",
+  "@goToDiscover": {},
+
+  "alreadyHaveAccount": "Already have an account?",
+  "@alreadyHaveAccount": {},
+
+  "orContinueWith": "or continue with",
+  "@orContinueWith": {},
+
+  "errorGeneric": "Something went wrong. Please try again.",
+  "@errorGeneric": {},
+
+  "errorNetworkUnavailable": "No internet connection.",
+  "@errorNetworkUnavailable": {},
+
+  "loading": "Loading…",
+  "@loading": {},
+
+  "navDiscover": "Discover",
+  "@navDiscover": {},
+
+  "navMatches": "Matches",
+  "@navMatches": {},
+
+  "navProfile": "Profile",
+  "@navProfile": {},
+
+  "navSettings": "Settings",
+  "@navSettings": {},
+
+  "discoverTitle": "Discover",
+  "@discoverTitle": {},
+
+  "swipesLeft": "{count} swipes left",
+  "@swipesLeft": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+
+  "swipesUnlimited": "Unlimited swipes",
+  "@swipesUnlimited": {},
+
+  "noMoreCards": "You've seen everyone for now",
+  "@noMoreCards": {},
+
+  "noMoreCardsSubtitle": "Check back tomorrow for new matches",
+  "@noMoreCardsSubtitle": {},
+
+  "kmAway": "{distance} km away",
+  "@kmAway": {
+    "placeholders": { "distance": { "type": "double" } }
+  },
+
+  "yearsExp": "{years} yrs exp.",
+  "@yearsExp": {
+    "placeholders": { "years": { "type": "int" } }
+  },
+
+  "itsAMatch": "You're connected!",
+  "@itsAMatch": {},
+
+  "matchSubtitle": "You and {name} can now message each other",
+  "@matchSubtitle": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+
+  "sendMessage": "Send Message",
+  "@sendMessage": {},
+
+  "keepSwiping": "Keep Swiping",
+  "@keepSwiping": {},
+
+  "matchesTitle": "Matches",
+  "@matchesTitle": {},
+
+  "matchesTotal": "{count} total",
+  "@matchesTotal": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+
+  "newMatchesSection": "New matches",
+  "@newMatchesSection": {},
+
+  "messagesSection": "Messages",
+  "@messagesSection": {},
+  "@matchesTitle": {},
+
+  "noMatchesYet": "No matches yet",
+  "@noMatchesYet": {},
+
+  "noMatchesSubtitle": "Start swiping to find your perfect teacher",
+  "@noMatchesSubtitle": {},
+
+  "startDiscovering": "Start Discovering",
+  "@startDiscovering": {},
+
+  "chatInputHint": "Type a message…",
+  "@chatInputHint": {},
+
+  "send": "Send",
+  "@send": {},
+
+  "today": "Today",
+  "@today": {},
+
+  "yesterday": "Yesterday",
+  "@yesterday": {},
+
+  "typingIndicator": "Typing…",
+  "@typingIndicator": {},
+
+  "verifiedBadge": "Verified",
+  "@verifiedBadge": {},
+
+  "pendingBadge": "Pending Review",
+  "@pendingBadge": {},
+
+  "featuredBadge": "Featured",
+  "@featuredBadge": {},
+
+  "aboutMe": "About Me",
+  "@aboutMe": {},
+
+  "subjectsLabel": "Subjects",
+  "@subjectsLabel": {},
+
+  "galleryLabel": "Gallery",
+  "@galleryLabel": {},
+
+  "experienceLabel": "Experience",
+  "@experienceLabel": {},
+
+  "qualificationsLabel": "Qualifications",
+  "@qualificationsLabel": {},
+
+  "availabilityLabel": "Availability",
+  "@availabilityLabel": {},
+
+  "reviewsLabel": "Reviews",
+  "@reviewsLabel": {},
+
+  "noReviewsYet": "No reviews yet",
+  "@noReviewsYet": {},
+
+  "ratingWithCount": "{rating} ({count} reviews)",
+  "@ratingWithCount": {
+    "placeholders": {
+      "rating": { "type": "String" },
+      "count": { "type": "int" }
+    }
+  },
+
+  "messageBtnLabel": "Message",
+  "@messageBtnLabel": {},
+
+  "passBtn": "Pass",
+  "@passBtn": {},
+
+  "connectBtn": "Connect",
+  "@connectBtn": {},
+  "@messageBtnLabel": {},
+
+  "myProfile": "My Profile",
+  "@myProfile": {},
+
+  "editProfile": "Edit Profile",
+  "@editProfile": {},
+
+  "aboutMeHint": "Tell teachers about yourself and your learning goals…",
+  "@aboutMeHint": {},
+
+  "subjectsInterested": "Subjects I'm learning",
+  "@subjectsInterested": {},
+
+  "saveChanges": "Save Changes",
+  "@saveChanges": {},
+
+  "saved": "Saved!",
+  "@saved": {},
+
+  "settingsTitle": "Settings",
+  "@settingsTitle": {},
+
+  "subscriptionSection": "Subscription",
+  "@subscriptionSection": {},
+
+  "currentPlan": "Current Plan",
+  "@currentPlan": {},
+
+  "freePlan": "Free",
+  "@freePlan": {},
+
+  "premiumPlan": "Premium",
+  "@premiumPlan": {},
+
+  "upgradeToPremium": "Upgrade to Premium",
+  "@upgradeToPremium": {},
+
+  "swipesPerDay": "{count} swipes / day",
+  "@swipesPerDay": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+
+  "unlimitedSwipes": "Unlimited swipes",
+  "@unlimitedSwipes": {},
+
+  "planMonthly": "Monthly",
+  "@planMonthly": {},
+
+  "planThreeMonths": "3 Months",
+  "@planThreeMonths": {},
+
+  "planSixMonths": "6 Months",
+  "@planSixMonths": {},
+
+  "planYearly": "Yearly",
+  "@planYearly": {},
+
+  "bestValue": "Best Value",
+  "@bestValue": {},
+
+  "accountSection": "Account",
+  "@accountSection": {},
+
+  "helpAndSupport": "Help & Support",
+  "@helpAndSupport": {},
+
+  "privacyPolicy": "Privacy Policy",
+  "@privacyPolicy": {},
+
+  "termsOfService": "Terms of Service",
+  "@termsOfService": {},
+
+  "signOut": "Sign Out",
+  "@signOut": {},
+
+  "deleteAccount": "Delete Account",
+  "@deleteAccount": {},
+
+  "mon": "Mon",
+  "@mon": {},
+  "tue": "Tue",
+  "@tue": {},
+  "wed": "Wed",
+  "@wed": {},
+  "thu": "Thu",
+  "@thu": {},
+  "fri": "Fri",
+  "@fri": {},
+  "sat": "Sat",
+  "@sat": {},
+  "sun": "Sun",
+  "@sun": {},
+
+  "teacherDiscoverTitle": "Discover",
+  "@teacherDiscoverTitle": {},
+
+  "tabStudents": "Students",
+  "@tabStudents": {},
+
+  "tabJobs": "Jobs",
+  "@tabJobs": {},
+
+  "jobCardLabel": "Job Opening",
+  "@jobCardLabel": {},
+
+  "salaryRange": "Salary",
+  "@salaryRange": {},
+
+  "contractType": "Contract",
+  "@contractType": {},
+
+  "contractFullTime": "Full-time",
+  "@contractFullTime": {},
+
+  "contractPartTime": "Part-time",
+  "@contractPartTime": {},
+
+  "contractContract": "Contract",
+  "@contractContract": {},
+
+  "applyNow": "Apply Now",
+  "@applyNow": {},
+
+  "postedBy": "Posted by {institution}",
+  "@postedBy": {
+    "placeholders": { "institution": { "type": "String" } }
+  },
+
+  "tabBio": "Bio",
+  "@tabBio": {},
+
+  "tabGallery": "Gallery",
+  "@tabGallery": {},
+
+  "tabQualifications": "Qualifications",
+  "@tabQualifications": {},
+
+  "tabExperience": "Experience",
+  "@tabExperience": {},
+
+  "tabSchedule": "Schedule",
+  "@tabSchedule": {},
+
+  "tabVideos": "Videos",
+  "@tabVideos": {},
+
+  "subjectsITeach": "Subjects I teach",
+  "@subjectsITeach": {},
+
+  "aboutMeTeacherHint": "Describe your teaching style, experience and what makes you stand out…",
+  "@aboutMeTeacherHint": {},
+
+  "addPhoto": "Add Photo",
+  "@addPhoto": {},
+
+  "galleryHint": "Add up to 6 photos to your profile",
+  "@galleryHint": {},
+
+  "addQualification": "Add Qualification",
+  "@addQualification": {},
+
+  "qualificationHint": "e.g. BSc Mathematics — University of Melbourne",
+  "@qualificationHint": {},
+
+  "addExperience": "Add Experience",
+  "@addExperience": {},
+
+  "jobTitle": "Job Title",
+  "@jobTitle": {},
+
+  "institution": "Institution / School",
+  "@institution": {},
+
+  "yearFrom": "From (year)",
+  "@yearFrom": {},
+
+  "yearTo": "To (year or Present)",
+  "@yearTo": {},
+
+  "scheduleHint": "Tap the time slots when you are available to teach",
+  "@scheduleHint": {},
+
+  "morning": "Morning",
+  "@morning": {},
+
+  "afternoon": "Afternoon",
+  "@afternoon": {},
+
+  "evening": "Evening",
+  "@evening": {},
+
+  "addVideoUrl": "Add Video URL",
+  "@addVideoUrl": {},
+
+  "videoUrlHint": "Paste a YouTube, TikTok or Vimeo link",
+  "@videoUrlHint": {},
+
+  "videoUrlLabel": "Video {number}",
+  "@videoUrlLabel": {
+    "placeholders": { "number": { "type": "int" } }
+  },
+
+  "teacherMatchesTitle": "Matches",
+  "@teacherMatchesTitle": {},
+
+  "sectionStudentMatches": "Students",
+  "@sectionStudentMatches": {},
+
+  "sectionJobMatches": "Job Applications",
+  "@sectionJobMatches": {},
+
+  "noJobMatchesYet": "No job applications yet",
+  "@noJobMatchesYet": {},
+
+  "featuredProfile": "Featured Profile",
+  "@featuredProfile": {},
+
+  "featuredProfileDesc": "Appear at the top of search results",
+  "@featuredProfileDesc": {},
+
+  "featuredActive": "Active",
+  "@featuredActive": {},
+
+  "featuredInactive": "Inactive",
+  "@featuredInactive": {},
+
+  "premiumRequired": "Premium required",
+  "@premiumRequired": {},
+
+  "teacherSettingsTitle": "Settings",
+  "@teacherSettingsTitle": {},
+
+  "remove": "Remove",
+  "@remove": {},
+
+  "add": "Add",
+  "@add": {},
+
+  "present": "Present",
+  "@present": {},
+
+  "paywallTitle": "Unlock Institution Access",
+  "@paywallTitle": {},
+
+  "paywallSubtitle": "Subscribe to post jobs and connect with qualified teachers",
+  "@paywallSubtitle": {},
+
+  "paywallFeatureJobs": "Post unlimited job cards",
+  "@paywallFeatureJobs": {},
+
+  "paywallFeatureBrowse": "Browse verified teacher profiles",
+  "@paywallFeatureBrowse": {},
+
+  "paywallFeatureMessaging": "Direct messaging with matched teachers",
+  "@paywallFeatureMessaging": {},
+
+  "paywallFeatureFeatured": "Featured placement in search results",
+  "@paywallFeatureFeatured": {},
+
+  "choosePlan": "Choose a Plan",
+  "@choosePlan": {},
+
+  "startSubscription": "Start Subscription",
+  "@startSubscription": {},
+
+  "cancelAnytime": "Cancel anytime · No commitment",
+  "@cancelAnytime": {},
+
+  "dashboardTitle": "My Job Cards",
+  "@dashboardTitle": {},
+
+  "postNewJob": "Post New Job",
+  "@postNewJob": {},
+
+  "noJobsPosted": "No jobs posted yet",
+  "@noJobsPosted": {},
+
+  "noJobsSubtitle": "Post your first job to start finding teachers",
+  "@noJobsSubtitle": {},
+
+  "statusActive": "Active",
+  "@statusActive": {},
+
+  "statusDraft": "Draft",
+  "@statusDraft": {},
+
+  "statusClosed": "Closed",
+  "@statusClosed": {},
+
+  "applicantsCount": "{count} applicants",
+  "@applicantsCount": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+
+  "editJob": "Edit",
+  "@editJob": {},
+
+  "closeJob": "Close",
+  "@closeJob": {},
+
+  "createJobTitle": "Post a Job",
+  "@createJobTitle": {},
+
+  "editJobTitle": "Edit Job",
+  "@editJobTitle": {},
+
+  "descriptionLabel": "Description",
+  "@descriptionLabel": {},
+
+  "descriptionHint": "Describe the role, requirements and what you're looking for…",
+  "@descriptionHint": {},
+
+  "locationLabel": "Location",
+  "@locationLabel": {},
+
+  "salaryFrom": "Min Pay",
+  "@salaryFrom": {},
+
+  "salaryTo": "Max Pay",
+  "@salaryTo": {},
+
+  "contractTypeLabel": "Contract Type",
+  "@contractTypeLabel": {},
+
+  "postJobBtn": "Post Job",
+  "@postJobBtn": {},
+
+  "saveAsDraft": "Save as Draft",
+  "@saveAsDraft": {},
+
+  "jobDetailTitle": "Job Details",
+  "@jobDetailTitle": {},
+
+  "applicantsTitle": "Applicants",
+  "@applicantsTitle": {},
+
+  "noApplicantsYet": "No applicants yet",
+  "@noApplicantsYet": {},
+
+  "noApplicantsSubtitle": "Teachers will appear here when they apply to this role",
+  "@noApplicantsSubtitle": {},
+
+  "viewProfile": "View Profile",
+  "@viewProfile": {},
+
+  "notificationsTitle": "Notifications",
+  "@notificationsTitle": {},
+
+  "noNotificationsYet": "No notifications yet",
+  "@noNotificationsYet": {},
+
+  "appliedToRole": "{name} applied to your {role} role",
+  "@appliedToRole": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "role": { "type": "String" }
+    }
+  },
+
+  "navDashboard": "Dashboard",
+  "@navDashboard": {},
+
+  "navNotifications": "Alerts",
+  "@navNotifications": {},
+
+  "subjectMaths": "Mathematics",
+  "@subjectMaths": {},
+
+  "subjectEnglish": "English",
+  "@subjectEnglish": {},
+
+  "subjectScience": "Sciences",
+  "@subjectScience": {},
+
+  "subjectPhysics": "Physics",
+  "@subjectPhysics": {},
+
+  "subjectChemistry": "Chemistry",
+  "@subjectChemistry": {},
+
+  "subjectBiology": "Biology",
+  "@subjectBiology": {},
+
+  "subjectEconomics": "Economics",
+  "@subjectEconomics": {},
+
+  "subjectFrench": "French",
+  "@subjectFrench": {},
+
+  "subjectGeography": "Geography",
+  "@subjectGeography": {},
+
+  "subjectHistory": "History",
+  "@subjectHistory": {},
+
+  "subjectICT": "ICT",
+  "@subjectICT": {},
+
+  "subjectOther": "Other",
+  "@subjectOther": {},
+
+  "manageSubscription": "Manage Subscription",
+  "@manageSubscription": {},
+
+  "changePlan": "Change Plan",
+  "@changePlan": {},
+
+  "cancelSubscription": "Cancel Subscription",
+  "@cancelSubscription": {},
+
+  "billingSection": "Billing",
+  "@billingSection": {},
+
+  "institutionProfileTitle": "Institution Profile",
+  "@institutionProfileTitle": {},
+
+  "institutionName": "Institution name",
+  "@institutionName": {},
+
+  "institutionNameHint": "e.g. Sunshine Academy",
+  "@institutionNameHint": {},
+
+  "institutionDescription": "Description",
+  "@institutionDescription": {},
+
+  "institutionDescriptionHint": "Tell teachers about your institution…",
+  "@institutionDescriptionHint": {},
+
+  "institutionWebsite": "Website",
+  "@institutionWebsite": {},
+
+  "institutionWebsiteHint": "https://yourschool.com",
+  "@institutionWebsiteHint": {},
+
+  "contactEmail": "Contact email",
+  "@contactEmail": {},
+
+  "saveProfile": "Save Profile",
+  "@saveProfile": {},
+
+  "profileSaved": "Profile saved",
+  "@profileSaved": {},
+  "errEnterEmailPassword": "Please enter your email and password.",
+  "@errEnterEmailPassword": {},
+
+  "errForgotPasswordNoEmail": "Enter your email above, then tap \"Forgot password\".",
+  "@errForgotPasswordNoEmail": {},
+
+  "msgResetEmailSent": "Password reset email sent to {email}.",
+  "@msgResetEmailSent": {"placeholders": {"email": {"type": "String"}}},
+
+  "msgGoogleComingSoon": "Google sign-in is coming soon.",
+  "@msgGoogleComingSoon": {},
+
+  "errFillNameEmailPassword": "Please fill in your name, email, and password.",
+  "@errFillNameEmailPassword": {},
+
+  "errInvalidEmail": "Please enter a valid email address.",
+  "@errInvalidEmail": {},
+
+  "errPasswordTooShort": "Password must be at least 6 characters.",
+  "@errPasswordTooShort": {},
+
+  "errPasswordsMismatch": "Passwords do not match.",
+  "@errPasswordsMismatch": {},
+
+  "errRestartRegistration": "Something went wrong \u2014 please restart registration.",
+  "@errRestartRegistration": {},
+
+  "errSelectCity": "Please select your city.",
+  "@errSelectCity": {},
+
+  "errFinishSetup": "Could not finish setting up your account. Please try again.",
+  "@errFinishSetup": {},
+
+  "warnAvatarUploadFailed": "Your account is ready, but the photo could not be uploaded.",
+  "@warnAvatarUploadFailed": {},
+
+  "errSubmitCertificate": "Could not submit your certificate: {error}",
+  "@errSubmitCertificate": {"placeholders": {"error": {"type": "String"}}},
+
+  "displayNameHint": "How should we call you?",
+  "@displayNameHint": {},
+
+  "adjustPhoto": "Adjust photo",
+  "@adjustPhoto": {},
+
+  "cropHint": "Drag to reposition \u00b7 pinch to zoom",
+  "@cropHint": {},
+
+  "done": "Done",
+  "@done": {},
+
+  "selectYourCity": "Select your city",
+  "@selectYourCity": {},
+
+  "searchForACity": "Search for a city\u2026",
+  "@searchForACity": {},
+
+  "errCityNotSelectable": "Could not select that city. Try another.",
+  "@errCityNotSelectable": {},
+
+  "errLoadSuggestions": "Could not load suggestions. Check your connection.",
+  "@errLoadSuggestions": {},
+
+  "errLoadProfile": "Could not load your profile.\n{error}",
+  "@errLoadProfile": {"placeholders": {"error": {"type": "String"}}},
+
+  "errSaveProfile": "Could not save your profile: {error}",
+  "@errSaveProfile": {"placeholders": {"error": {"type": "String"}}},
+
+  "errUpdateCity": "Could not update your city: {error}",
+  "@errUpdateCity": {"placeholders": {"error": {"type": "String"}}},
+
+  "errAddPhoto": "Could not add the photo: {error}",
+  "@errAddPhoto": {"placeholders": {"error": {"type": "String"}}},
+
+  "errRemovePhoto": "Could not remove the photo: {error}",
+  "@errRemovePhoto": {"placeholders": {"error": {"type": "String"}}},
+
+  "errSaveQualifications": "Could not save qualifications: {error}",
+  "@errSaveQualifications": {"placeholders": {"error": {"type": "String"}}},
+
+  "errSaveExperience": "Could not save experience: {error}",
+  "@errSaveExperience": {"placeholders": {"error": {"type": "String"}}},
+
+  "errSaveSchedule": "Could not save your schedule: {error}",
+  "@errSaveSchedule": {"placeholders": {"error": {"type": "String"}}},
+
+  "errSaveVideos": "Could not save your videos: {error}",
+  "@errSaveVideos": {"placeholders": {"error": {"type": "String"}}},
+
+  "hourlyRate": "Hourly rate",
+  "@hourlyRate": {},
+
+  "hourlyRateHint": "e.g. 25",
+  "@hourlyRateHint": {},
+
+  "videosAllowedHint": "Only YouTube and Vimeo links are accepted.",
+  "@videosAllowedHint": {},
+
+  "subscriptionProName": "Institution Pro",
+  "@subscriptionProName": {},
+
+  "subscriptionRenews": "Active \u00b7 Renews {date}",
+  "@subscriptionRenews": {"placeholders": {"date": {"type": "String"}}},
+
+  "appliedToJob": "Applied to \"{title}\" at {institution}",
+  "@appliedToJob": {"placeholders": {"title": {"type": "String"}, "institution": {"type": "String"}}},
+
+  "savedExclamation": "Saved!",
+  "@savedExclamation": {},
+
+  "currency": "Currency",
+  "@currency": {},
+
+  "profileNotFound": "This profile is not available.",
+  "@profileNotFound": {},
+
+  "addAnotherFile": "Tap to add another file",
+  "@addAnotherFile": {},
+
+  "certFilesSelected": "{count} of {max} documents selected",
+  "@certFilesSelected": {"placeholders": {"count": {"type": "int"}, "max": {"type": "int"}}},
+
+  "certMaxFiles": "You can upload at most {max} documents.",
+  "@certMaxFiles": {"placeholders": {"max": {"type": "int"}}},
+
+  "certFileTooLarge": "\"{name}\" is larger than 10 MB and was skipped.",
+  "@certFileTooLarge": {"placeholders": {"name": {"type": "String"}}},
+
+  "errCropFailed": "Could not crop the image. Please try again.",
+  "@errCropFailed": {},
+
+  "pendingDiscoverTitle": "Verification pending",
+  "@pendingDiscoverTitle": {},
+
+  "pendingDiscoverBody": "You can discover students once an admin has approved your certificate. We'll let you know as soon as it's reviewed.",
+  "@pendingDiscoverBody": {},
+
+  "cancel": "Cancel",
+  "@cancel": {},
+
+  "signOutConfirm": "Are you sure you want to sign out?",
+  "@signOutConfirm": {},
+
+  "addSubject": "Add subject",
+  "@addSubject": {},
+
+  "addSubjectHint": "e.g. Mandarin, Music Theory",
+  "@addSubjectHint": {},
+
+  "subjectsMax": "You can select up to {max} subjects.",
+  "@subjectsMax": {"placeholders": {"max": {"type": "int"}}},
+
+  "errSendMessage": "Could not send: {error}",
+  "@errSendMessage": {"placeholders": {"error": {"type": "String"}}},
+
+  "errLoadMessages": "Could not load this conversation.\n{error}",
+  "@errLoadMessages": {"placeholders": {"error": {"type": "String"}}},
+
+  "chatEmpty": "You matched! Say hello.",
+  "@chatEmpty": {},
+
+  "errLoadMatches": "Could not load your matches.\n{error}",
+  "@errLoadMatches": {"placeholders": {"error": {"type": "String"}}},
+
+  "noMatchesYetSubtitle": "Keep swiping \u2014 when someone likes you back, they'll appear here.",
+  "@noMatchesYetSubtitle": {},
+
+  "messagesLabel": "MESSAGES",
+  "@messagesLabel": {},
+
+  "newMatchesLabel": "NEW MATCHES",
+  "@newMatchesLabel": {},
+
+  "activityTitle": "Activity",
+  "@activityTitle": {},
+
+  "errLoadActivity": "Could not load your activity.\n{error}",
+  "@errLoadActivity": {"placeholders": {"error": {"type": "String"}}},
+
+  "noActivityYet": "Nothing here yet",
+  "@noActivityYet": {},
+
+  "noActivityYetSubtitle": "Matches, messages and account updates will show up here.",
+  "@noActivityYetSubtitle": {},
+
+  "refreshDeck": "Show people I passed",
+  "@refreshDeck": {},
+
+  "searchWider": "Search wider ({km} km)",
+  "@searchWider": {"placeholders": {"km": {"type": "int"}}},
+
+  "searchRadiusNote": "Searching within {km} km",
+  "@searchRadiusNote": {"placeholders": {"km": {"type": "int"}}},
+
+  "postJob": "Post a job",
+  "@postJob": {},
+
+  "reopenJob": "Reopen",
+  "@reopenJob": {},
+
+  "jobDescription": "Description",
+  "@jobDescription": {},
+
+  "jobNotFound": "This job card no longer exists.",
+  "@jobNotFound": {},
+
+  "noJobsYet": "No job cards yet",
+  "@noJobsYet": {},
+
+  "noJobsYetSubtitle": "Post a job and approved teachers nearby will see it in their deck.",
+  "@noJobsYetSubtitle": {},
+
+  "applicantsSection": "Applicants",
+  "@applicantsSection": {},
+
+  "applicantCount": "{count, plural, =0{No applicants} =1{1 applicant} other{{count} applicants}}",
+  "@applicantCount": {"placeholders": {"count": {"type": "int"}}},
+
+  "errJobTitleSubjectRequired": "A title and subject are required.",
+  "@errJobTitleSubjectRequired": {},
+
+  "jobSubjectsLabel": "Subject",
+  "@jobSubjectsLabel": {},
+
+  "errJobSubjectsRequired": "Choose a subject.",
+  "@errJobSubjectsRequired": {},
+
+  "jobSubjectHint": "e.g. Mathematics",
+  "@jobSubjectHint": {},
+
+  "jobLevelLabel": "Level / Key Stage",
+  "@jobLevelLabel": {},
+
+  "jobLevelHint": "e.g. KS3, A-Level, Secondary",
+  "@jobLevelHint": {},
+
+  "startDateLabel": "Start date",
+  "@startDateLabel": {},
+
+  "startDateFlexible": "Flexible",
+  "@startDateFlexible": {},
+
+  "jobVideoOptional": "Video URL (optional)",
+  "@jobVideoOptional": {},
+
+  "jobLocationNote": "Posted in {city} \u2014 your institution's city",
+  "@jobLocationNote": {"placeholders": {"city": {"type": "String"}}},
+
+  "saveDraft": "Save Draft",
+  "@saveDraft": {},
+
+  "publishJob": "Publish",
+  "@publishJob": {},
+
+  "draftNotVisible": "Drafts are not shown to teachers until you publish them.",
+  "@draftNotVisible": {},
+
+  "payPeriodLabel": "Pay period",
+  "@payPeriodLabel": {},
+
+  "perHour": "Per hour",
+  "@perHour": {},
+
+  "perDay": "Per day",
+  "@perDay": {},
+
+  "perMonth": "Per month",
+  "@perMonth": {},
+
+  "payPerHourShort": "/hr",
+  "@payPerHourShort": {},
+
+  "payPerDayShort": "/day",
+  "@payPerDayShort": {},
+
+  "payPerMonthShort": "/mo",
+  "@payPerMonthShort": {},
+
+  "reportUser": "Report",
+  "@reportUser": {},
+
+  "blockUser": "Block",
+  "@blockUser": {},
+
+  "unblockUser": "Unblock",
+  "@unblockUser": {},
+
+  "reportUserTitle": "Report {name}",
+  "@reportUserTitle": {"placeholders": {"name": {"type": "String"}}},
+
+  "reportUserBody": "Reports are reviewed by our team. Your name is never shown to the person you report.",
+  "@reportUserBody": {},
+
+  "reportSent": "Thanks \u2014 our team will review this.",
+  "@reportSent": {},
+
+  "reportAlreadySent": "You've already reported this.",
+  "@reportAlreadySent": {},
+
+  "blockUserTitle": "Block {name}?",
+  "@blockUserTitle": {"placeholders": {"name": {"type": "String"}}},
+
+  "blockUserBody": "They won't be able to see you or message you, and you won't see them. Any existing conversation will be removed.",
+  "@blockUserBody": {},
+
+  "userBlocked": "Blocked.",
+  "@userBlocked": {},
+
+  "userUnblocked": "Unblocked.",
+  "@userUnblocked": {},
+
+  "reasonHarassment": "Harassment or bullying",
+  "@reasonHarassment": {},
+
+  "reasonInappropriate": "Inappropriate content",
+  "@reasonInappropriate": {},
+
+  "reasonSpam": "Spam or scam",
+  "@reasonSpam": {},
+
+  "reasonFakeProfile": "Fake profile",
+  "@reasonFakeProfile": {},
+
+  "reasonUnderage": "Underage user",
+  "@reasonUnderage": {},
+
+  "reasonSafety": "Safety concern",
+  "@reasonSafety": {},
+
+  "reasonOther": "Something else",
+  "@reasonOther": {},
+
+  "moreOptions": "More options",
+  "@moreOptions": {},
+
+  "reportUserSubtitle": "Tell us about harassment, spam or unsafe behaviour",
+  "@reportUserSubtitle": {},
+
+  "blockUserSubtitle": "They can't see or message you, and you won't see them",
+  "@blockUserSubtitle": {},
+
+  "unblockUserSubtitle": "They can appear in your deck again",
+  "@unblockUserSubtitle": {},
+
+  "blockedUsers": "Blocked users",
+  "@blockedUsers": {},
+
+  "noBlockedUsers": "No blocked users",
+  "@noBlockedUsers": {},
+
+  "noBlockedUsersSubtitle": "Anyone you block will appear here, and you can unblock them at any time.",
+  "@noBlockedUsersSubtitle": {},
+
+  "unknownUser": "Unknown user",
+  "@unknownUser": {},
+
+  "noMoreJobs": "No more jobs right now",
+  "@noMoreJobs": {},
+
+  "noMoreJobsSubtitle": "You only see jobs in the subjects you teach. Add a subject to widen your search, or start over to revisit the ones you skipped — jobs you've applied to won't come back.",
+  "@noMoreJobsSubtitle": {},
+
+  "startOverJobs": "Start over",
+  "@startOverJobs": {},
+
+  "editMySubjects": "Edit my subjects",
+  "@editMySubjects": {},
+
+  "benefitUnlimitedSwipes": "Unlimited swipes — no daily limit",
+  "@benefitUnlimitedSwipes": {},
+
+  "benefitFeaturedBadge": "Featured badge on your profile",
+  "@benefitFeaturedBadge": {},
+
+  "benefitPriorityDiscovery": "Appear higher in discovery",
+  "@benefitPriorityDiscovery": {},
+
+  "manageSubscriptionHint": "Manage or cancel in your App Store / Play Store account settings.",
+  "@manageSubscriptionHint": {},
+
+  "subscribeBtn": "Subscribe",
+  "@subscribeBtn": {},
+
+  "restorePurchases": "Restore purchases",
+  "@restorePurchases": {},
+
+  "premiumThanks": "You're premium. Enjoy unlimited swipes!",
+  "@premiumThanks": {},
+
+  "premiumRestored": "Your subscription has been restored.",
+  "@premiumRestored": {},
+
+  "premiumNothingToRestore": "No previous purchase found for this account.",
+  "@premiumNothingToRestore": {},
+
+  "premiumUnavailable": "Subscriptions aren't available right now. Please try again later.",
+  "@premiumUnavailable": {},
+
+  "subscriptionTerms": "Payment is charged to your store account at confirmation. The subscription renews automatically unless cancelled at least 24 hours before the end of the period. Manage or cancel it in your account settings.",
+  "@subscriptionTerms": {},
+
+  "termsOfService": "Terms of Service",
+  "@termsOfService": {},
+
+  "privacyPolicy": "Privacy Policy",
+  "@privacyPolicy": {},
+
+  "videosLabel": "Intro videos",
+  "@videosLabel": {},
+
+  "errOpenVideo": "Could not open this video.",
+  "@errOpenVideo": {},
+
+  "subjectOther": "Other (type your own)",
+  "@subjectOther": {},
+
+  "subjectOtherLabel": "Subject",
+  "@subjectOtherLabel": {},
+
+  "writeReview": "Write a review",
+  "@writeReview": {},
+
+  "editReview": "Edit",
+  "@editReview": {},
+
+  "yourReviewLabel": "Your review",
+  "@yourReviewLabel": {},
+
+  "reviewSheetTitle": "Review {name}",
+  "@reviewSheetTitle": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+
+  "reviewModerationNote": "Reviews are checked by our team before they appear.",
+  "@reviewModerationNote": {},
+
+  "yourRatingLabel": "Your rating",
+  "@yourRatingLabel": {},
+
+  "reviewCommentHint": "What was it like learning with them? (optional)",
+  "@reviewCommentHint": {},
+
+  "submitReviewBtn": "Submit review",
+  "@submitReviewBtn": {},
+
+  "reviewSubmitted": "Thanks — your review will appear once it's approved.",
+  "@reviewSubmitted": {},
+
+  "reviewPendingNote": "Awaiting approval — only you can see this.",
+  "@reviewPendingNote": {},
+
+  "reviewPublishedNote": "Published on their profile.",
+  "@reviewPublishedNote": {},
+
+  "reviewRejectedNote": "This review wasn't published. You can edit it and try again.",
+  "@reviewRejectedNote": {},
+
+  "reviewRejectedNoteWithReason": "This review wasn't published: {reason}",
+  "@reviewRejectedNoteWithReason": {
+    "placeholders": {
+      "reason": {"type": "String"}
+    }
+  },
+
+  "reviewFailed": "Could not submit your review. {error}",
+  "@reviewFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  }
+}

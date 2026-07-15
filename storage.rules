@@ -1,0 +1,54 @@
+rules_version = '2';
+
+// EduLinky Storage security rules.
+//
+// Cloud Functions use the Admin SDK and bypass these rules entirely.
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+    function isImageUnder(mb) {
+      return request.resource.contentType.matches('image/.*')
+             && request.resource.size < mb * 1024 * 1024;
+    }
+
+    // Profile photo — publicly visible to other signed-in users (it is shown on
+    // discovery cards), writable only by its owner.
+    match /avatars/{uid}/{fileName} {
+      allow read: if isSignedIn();
+      allow write: if isOwner(uid) && isImageUnder(5);
+      allow delete: if isOwner(uid);
+    }
+
+    // Profile gallery — same visibility as the avatar. The 6-photo cap is
+    // enforced where the gallery doc is written, not here (rules can't count).
+    match /gallery/{uid}/{fileName} {
+      allow read: if isSignedIn();
+      allow write: if isOwner(uid) && isImageUnder(5);
+      allow delete: if isOwner(uid);
+    }
+
+    // Teacher certificates — private identity documents. A teacher may upload
+    // several (a degree, a PGCE, a licence), but NOBODY may read them through
+    // the client SDK: only admins reviewing a verification do, and they go
+    // through a Cloud Function (Admin SDK), which is not bound by these rules.
+    match /certs/{uid}/{fileName} {
+      allow read: if false;
+      allow write: if isOwner(uid)
+                   && request.resource.size < 10 * 1024 * 1024
+                   && (request.resource.contentType.matches('image/.*')
+                       || request.resource.contentType == 'application/pdf');
+      allow delete: if false;
+    }
+
+    // Everything else is denied.
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

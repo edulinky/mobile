@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EduLinky — Swipe to learn. Swipe to teach.</title>
+  <meta name="description" content="EduLinky connects students, teachers and institutions through a single swipe. Find the right tutor, discover students to teach, or recruit verified teachers — near you." />
+  <meta property="og:title" content="EduLinky — Swipe to learn. Swipe to teach." />
+  <meta property="og:description" content="The education recruitment app that connects students, teachers and institutions with a single swipe." />
+  <meta property="og:type" content="website" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Icon sprite: line icons referenced via <use>. No emoji. -->
+  <svg class="icon-sprite" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="ic-cap" viewBox="0 0 24 24"><path d="M21.42 10.92a1 1 0 0 0-.02-1.84L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.84l8.57 3.9a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></symbol>
+    <symbol id="ic-user" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+    <symbol id="ic-building" viewBox="0 0 24 24"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></symbol>
+    <symbol id="ic-shield-check" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></symbol>
+    <symbol id="ic-flag" viewBox="0 0 24 24"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/></symbol>
+    <symbol id="ic-lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+    <symbol id="ic-pin" viewBox="0 0 24 24"><path d="M20 10c0 4.4-5.5 9.4-7.3 10.9a1 1 0 0 1-1.4 0C9.5 19.4 4 14.4 4 10a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></symbol>
+    <symbol id="ic-bell" viewBox="0 0 24 24"><path d="M10.27 21a2 2 0 0 0 3.46 0"/><path d="M3.26 15.33A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.67C19.41 13.96 18 12.5 18 8A6 6 0 0 0 6 8c0 4.5-1.41 5.96-2.74 7.33z"/></symbol>
+    <symbol id="ic-sparkles" viewBox="0 0 24 24"><path d="M9.94 15.5A2 2 0 0 0 8.5 14.06l-6.14-1.58a.5.5 0 0 1 0-.96L8.5 9.94A2 2 0 0 0 9.94 8.5l1.58-6.14a.5.5 0 0 1 .96 0L14.06 8.5A2 2 0 0 0 15.5 9.94l6.14 1.58a.5.5 0 0 1 0 .96L15.5 14.06a2 2 0 0 0-1.44 1.44l-1.58 6.14a.5.5 0 0 1-.96 0z"/></symbol>
+    <symbol id="ic-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+    <symbol id="ic-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></symbol>
+    <symbol id="ic-handshake" viewBox="0 0 24 24"><path d="m11 17 2 2a1 1 0 1 0 3-3"/><path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-3-3l2.81-2.81a5.79 5.79 0 0 1 7.06-.87l.47.28a2 2 0 0 0 1.42.25L21 4"/><path d="m21 3 1 11h-2"/><path d="M3 3 2 14l6.5 6.5a1 1 0 1 0 3-3"/><path d="M3 4h8"/></symbol>
+  </svg>
+
+  <header>
+    <div class="wrap nav">
+      <a class="brand" href="./"><span class="logo"><svg viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M11.99 18.54l-7.37-5.73L3 14.07l9 7 9-7-1.63-1.27-7.38 5.74zM12 16l7.36-5.73L21 9l-9-7-9 7 1.63 1.27L12 16z"/></svg></span> EduLinky</a>
+      <nav class="nav-links">
+        <a href="#how">How it works</a>
+        <a href="#roles">Who it's for</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#safety">Safety</a>
+        <a class="btn btn-primary" href="#get">Get the app</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero -->
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <span class="pill"><span class="dot"></span> Coming soon to iOS &amp; Android</span>
+          <h1>Swipe to learn.<br /><span class="grad">Swipe to teach.</span></h1>
+          <p class="sub">
+            EduLinky connects students, teachers and institutions through a single
+            swipe. Find the right tutor near you, discover students to teach, or
+            recruit verified teachers — no forms, no waiting rooms.
+          </p>
+          <div class="cta-row">
+            <a class="btn btn-primary btn-lg" href="#get">Get early access</a>
+            <a class="btn btn-ghost btn-lg" href="#how">See how it works</a>
+          </div>
+          <p class="store-note">✨ Free to join · Premium unlocks unlimited swipes</p>
+
+          <div class="trust">
+            <div class="item"><span class="n">3</span><span class="l">roles, one app</span></div>
+            <div class="item"><span class="n">Verified</span><span class="l">teachers only</span></div>
+            <div class="item"><span class="n">Match‑gated</span><span class="l">private chat</span></div>
+          </div>
+        </div>
+
+        <!-- App mockup -->
+        <div class="phone-stage" aria-hidden="true">
+          <div class="phone">
+            <div class="notch"></div>
+            <div class="screen">
+              <div class="app-top">
+                <span class="t">Discover</span>
+                <span class="bell"><svg class="ic"><use href="#ic-bell"/></svg><span class="badge-dot"></span></span>
+              </div>
+              <div class="swipe-card">
+                <span class="badge-v">✓ Verified</span>
+                <span class="face"><svg class="ic"><use href="#ic-user"/></svg></span>
+                <div class="meta">
+                  <div class="nm">Linh, 29</div>
+                  <div class="rw">
+                    <span class="chip">Mathematics</span>
+                    <span class="rate"><span class="star">★</span>&nbsp;4.9</span>
+                    <span class="loc"><svg class="ic"><use href="#ic-pin"/></svg>2 km away</span>
+                  </div>
+                </div>
+              </div>
+              <div class="app-actions">
+                <div class="fab no"><svg class="ic"><use href="#ic-x"/></svg></div>
+                <div class="fab info"><svg class="ic"><use href="#ic-info"/></svg></div>
+                <div class="fab yes"><svg class="ic"><use href="#ic-handshake"/></svg></div>
+              </div>
+            </div>
+            <div class="match-chip"><span class="em">🎉</span> It's a match!</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How it works -->
+    <section id="how">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="eyebrow">How it works</div>
+          <h2>A match in three taps</h2>
+          <p>The same simple flow whether you're learning, teaching or hiring.</p>
+        </div>
+        <div class="steps">
+          <div class="step">
+            <div class="num">1</div>
+            <div>
+              <h3>Build your profile</h3>
+              <p>Pick your role, your subjects and your city. Teachers add their
+                 credentials for verification and can showcase intro videos.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="num">2</div>
+            <div>
+              <h3>Swipe through people near you</h3>
+              <p>Right to connect, left to pass. Everyone you see is close by and
+                 teaches or studies exactly what you're looking for.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="num">3</div>
+            <div>
+              <h3>Match, then message</h3>
+              <p>When you both swipe right, private chat unlocks. Agree the details
+                 and start learning — no cold messages, no spam.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Roles -->
+    <section id="roles" class="alt">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="eyebrow">Who it's for</div>
+          <h2>One app, three ways in</h2>
+        </div>
+        <div class="grid grid-3">
+          <div class="card hover">
+            <div class="ico"><svg class="ic"><use href="#ic-cap"/></svg></div>
+            <h3>Students</h3>
+            <p>Discover teachers and tutors for the subjects you're learning. Browse
+               profiles, watch intro videos, and connect with the ones who fit your
+               schedule and budget.</p>
+          </div>
+          <div class="card hover">
+            <div class="ico"><svg class="ic"><use href="#ic-user"/></svg></div>
+            <h3>Teachers</h3>
+            <p>Reach students who want what you teach, and swipe through job cards
+               from institutions near you. Get verified, earn a Featured badge with
+               Premium, and stand out.</p>
+          </div>
+          <div class="card hover">
+            <div class="ico"><svg class="ic"><use href="#ic-building"/></svg></div>
+            <h3>Institutions</h3>
+            <p>Post job cards and recruit verified teachers directly. When a teacher
+               shows interest, you hear about it instantly — no job‑board noise.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pricing -->
+    <section id="pricing">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="eyebrow">Pricing</div>
+          <h2>Start free. Upgrade when you're ready.</h2>
+          <p>Everyone can join and match for free. Premium removes the daily limit
+             and helps you stand out.</p>
+        </div>
+
+        <div style="text-align:center;">
+          <div class="toggle" role="tablist" aria-label="Billing period">
+            <button role="tab" aria-selected="true"  data-val="4.99" data-per="/mo" data-billed="Billed monthly · cancel anytime">Monthly</button>
+            <button role="tab" aria-selected="false" data-val="4.17" data-per="/mo" data-billed="Billed $49.99 per year · save 17%">Yearly <span class="save">Save 17%</span></button>
+          </div>
+        </div>
+        <p class="price-caption">Prices shown in USD and are indicative — the final price is set by the App Store and Google Play in your local currency.</p>
+
+        <div class="plans">
+          <!-- Free -->
+          <div class="plan">
+            <div class="pname">Free</div>
+            <div class="who">Students &amp; teachers</div>
+            <div class="amt"><span class="cur">$</span><span class="val">0</span><span class="per">/forever</span></div>
+            <div class="billed">No card required</div>
+            <ul>
+              <li><span class="ck">✓</span> Build a full profile</li>
+              <li><span class="ck">✓</span> Up to 20 swipes a day</li>
+              <li><span class="ck">✓</span> Match &amp; private chat</li>
+              <li><span class="ck">✓</span> See verified badges &amp; reviews</li>
+              <li class="muted"><span class="ck">—</span> No Featured badge</li>
+            </ul>
+            <a class="btn btn-ghost" href="#get">Get started</a>
+          </div>
+
+          <!-- Premium -->
+          <div class="plan popular">
+            <span class="tag">Most popular</span>
+            <div class="pname">Premium</div>
+            <div class="who">Students &amp; teachers</div>
+            <div class="amt"><span class="cur">$</span><span class="val" id="pxVal">4.99</span><span class="per" id="pxPer">/mo</span></div>
+            <div class="billed" id="pxBilled">Billed monthly · cancel anytime</div>
+            <ul>
+              <li><span class="ck">✓</span> <strong>Unlimited swipes</strong></li>
+              <li><span class="ck">✓</span> Priority placement in discovery</li>
+              <li><span class="ck">✓</span> Featured badge <em>(teachers)</em></li>
+              <li><span class="ck">✓</span> Everything in Free</li>
+              <li><span class="ck">✓</span> Cancel anytime</li>
+            </ul>
+            <a class="btn btn-primary" href="#get">Go Premium</a>
+          </div>
+
+          <!-- Institution -->
+          <div class="plan">
+            <div class="pname">Institution</div>
+            <div class="who">Schools &amp; academies</div>
+            <div class="amt"><span class="val" style="font-size:34px;">Custom</span></div>
+            <div class="billed">Subscription required to recruit</div>
+            <ul>
+              <li><span class="ck">✓</span> Post unlimited job cards</li>
+              <li><span class="ck">✓</span> Recruit verified teachers</li>
+              <li><span class="ck">✓</span> Instant applicant alerts</li>
+              <li><span class="ck">✓</span> Recruiting dashboard</li>
+            </ul>
+            <a class="btn btn-ghost" href="mailto:sales@edulinky.com?subject=EduLinky%20for%20institutions">Talk to us</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Safety -->
+    <section id="safety" class="alt">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="eyebrow">Safety &amp; trust</div>
+          <h2>A community you can trust</h2>
+          <p>Real connections need a safe place to happen. Safety is built in, not
+             bolted on.</p>
+        </div>
+        <div class="grid grid-3">
+          <div class="card hover">
+            <div class="ico"><svg class="ic"><use href="#ic-shield-check"/></svg></div>
+            <h3>Verified teachers</h3>
+            <p>Teachers submit their qualifications, and our team reviews them before
+               a verified badge ever appears.</p>
+          </div>
+          <div class="card hover">
+            <div class="ico"><svg class="ic"><use href="#ic-flag"/></svg></div>
+            <h3>Report &amp; block</h3>
+            <p>Flag or block anyone in a tap. Reports reach our moderators fast, and
+               blocked users disappear from your world.</p>
+          </div>
+          <div class="card hover">
+            <div class="ico"><svg class="ic"><use href="#ic-lock"/></svg></div>
+            <h3>Your data, protected</h3>
+            <p>Chat is locked until you both agree to connect, and your information
+               is handled with care. See our <a href="privacy/">Privacy Policy</a>.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="eyebrow">FAQ</div>
+          <h2>Good questions</h2>
+        </div>
+        <div class="faq">
+          <details>
+            <summary>Is EduLinky free to use?</summary>
+            <p>Yes. Students and teachers can create a profile, swipe, match and chat
+               for free. Premium is optional and unlocks unlimited swipes plus, for
+               teachers, a Featured badge.</p>
+          </details>
+          <details>
+            <summary>How does the daily swipe limit work?</summary>
+            <p>Free members get a set number of right‑swipes each day. Left swipes
+               (passes) are always unlimited. Premium removes the daily limit
+               entirely.</p>
+          </details>
+          <details>
+            <summary>How are teachers verified?</summary>
+            <p>Teachers upload their qualifications when they sign up. Our moderation
+               team reviews the documents privately before a verified badge appears
+               on the profile. Documents are never shown to other users.</p>
+          </details>
+          <details>
+            <summary>How do I cancel a subscription?</summary>
+            <p>Subscriptions are billed through the App Store or Google Play, so you
+               manage or cancel them in your store account settings at any time.
+               You keep Premium until the end of the period you've paid for.</p>
+          </details>
+          <details>
+            <summary>Where is EduLinky available?</summary>
+            <p>We're launching first in Vietnam and expanding from there. Join the
+               early‑access list to be told the moment it's live near you.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section id="get">
+      <div class="wrap">
+        <div class="band">
+          <h2>Be first to know when we launch</h2>
+          <p>EduLinky is coming soon to the App Store and Google Play.</p>
+          <a class="btn btn-primary btn-lg" href="mailto:hello@edulinky.com?subject=EduLinky%20early%20access">Request early access</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <div class="foot">
+        <a class="brand" href="./"><span class="logo"><svg viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M11.99 18.54l-7.37-5.73L3 14.07l9 7 9-7-1.63-1.27-7.38 5.74zM12 16l7.36-5.73L21 9l-9-7-9 7 1.63 1.27L12 16z"/></svg></span> EduLinky</a>
+        <nav class="foot-links">
+          <a href="#how">How it works</a>
+          <a href="#roles">Who it's for</a>
+          <a href="#pricing">Pricing</a>
+          <a href="privacy/">Privacy Policy</a>
+          <a href="terms/">Terms &amp; Conditions</a>
+          <a href="mailto:support@edulinky.com">Contact</a>
+        </nav>
+      </div>
+      <p class="copy">© 2026 EduLinky. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Pricing billing-period toggle. Static prices are indicative; the store is
+    // the source of truth in the app.
+    (function () {
+      var buttons = document.querySelectorAll('.toggle button');
+      var val = document.getElementById('pxVal');
+      var per = document.getElementById('pxPer');
+      var billed = document.getElementById('pxBilled');
+      buttons.forEach(function (b) {
+        b.addEventListener('click', function () {
+          buttons.forEach(function (x) { x.setAttribute('aria-selected', 'false'); });
+          b.setAttribute('aria-selected', 'true');
+          val.textContent = b.dataset.val;
+          per.textContent = b.dataset.per;
+          billed.textContent = b.dataset.billed;
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

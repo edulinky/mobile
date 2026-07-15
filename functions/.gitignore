@@ -1,0 +1,15 @@
+# Compiled output
+lib/
+
+# Dependencies
+node_modules/
+
+# Secrets — real values live here, never committed. See .env.example.
+.env
+.env.*
+!.env.example
+
+# Logs
+firebase-debug.log
+firebase-debug.*.log
+*.local

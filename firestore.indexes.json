@@ -1,0 +1,220 @@
+{
+  "indexes": [
+    {
+      "_comment": "getCandidates: equality on role + is_banned, range/order on the geohash. Firestore requires a composite index whenever an equality filter is combined with a range on a different field.",
+      "collectionGroup": "users",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "role",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "is_banned",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "geo_location.geohash",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "_comment": "Listing a user's matches, newest first (Phase 5).",
+      "collectionGroup": "matches",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "participants",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "last_message_at",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "_comment": "Notification inbox: newest first, and the unread badge count.",
+      "collectionGroup": "items",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "read",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "created_at",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "_comment": "getCandidates deck-boost: 'who has already right-swiped me'. Collection-group query across every user's swipes/{uid}/sent.",
+      "collectionGroup": "sent",
+      "queryScope": "COLLECTION_GROUP",
+      "fields": [
+        {
+          "fieldPath": "target_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "liked",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "_comment": "getJobCards: active cards within a geohash range.",
+      "collectionGroup": "jobCards",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "geo_location.geohash",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "_comment": "An institution's own job cards, newest first (dashboard).",
+      "collectionGroup": "jobCards",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "inst_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "created_at",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "_comment": "Applications an institution has received, newest first.",
+      "collectionGroup": "applications",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "inst_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "created_at",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "_comment": "Applications for one job card, newest first.",
+      "collectionGroup": "applications",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "job_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "created_at",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "_comment": "Admin verification queue: teachers awaiting review, oldest submission first.",
+      "collectionGroup": "users",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "verified_status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "cert_submitted_at",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "_comment": "Audit log, newest first.",
+      "collectionGroup": "auditLog",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "action",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "created_at",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "_comment": "Admin report queue: open reports, oldest first (24h SLA).",
+      "collectionGroup": "reports",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "created_at",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "_comment": "A teacher's published reviews on their public profile, newest first. The status filter is required by the rules, not just by taste.",
+      "collectionGroup": "reviews",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "target_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "created_at",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "_comment": "Admin moderation queue: reviews by status, oldest first.",
+      "collectionGroup": "reviews",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "updated_at",
+          "order": "ASCENDING"
+        }
+      ]
+    }
+  ],
+  "fieldOverrides": [
+    {
+      "_comment": "getCandidates asks 'who has blocked me?' with a collection-group query over blocks/{uid}/blocked. Single-field collection-group indexes are NOT automatic \u2014 they need this exemption.",
+      "collectionGroup": "blocked",
+      "fieldPath": "target_id",
+      "indexes": [
+        {
+          "order": "ASCENDING",
+          "queryScope": "COLLECTION_GROUP"
+        }
+      ]
+    }
+  ]
+}

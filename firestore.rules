@@ -1,0 +1,267 @@
+rules_version = '2';
+
+// EduLink Firestore security rules.
+//
+// Phase 1 baseline: default-deny for all client access. Cloud Functions use the
+// Admin SDK and bypass these rules entirely, so the `health` check and future
+// server-side writes are unaffected. Per-collection client rules (users, matches,
+// messages, swipes, jobCards, reviews) are added in Phase 2+ as each feature lands.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Helpers (used by later phases) ──────────────────────────
+    function isSignedIn() { return request.auth != null; }
+    function isOwner(uid) { return isSignedIn() && request.auth.uid == uid; }
+    function hasRole(role) { return isSignedIn() && request.auth.token.role == role; }
+    function isPremium() { return isSignedIn() && request.auth.token.isPremium == true; }
+
+    // ── Users ───────────────────────────────────────────────────
+    // Docs are created server-side only (completeRegistration, Admin SDK).
+    // Owners may edit their own profile but NEVER the server-controlled fields:
+    //   role / sub_status / verified_status / is_banned / uid
+    //     → blocks privilege self-elevation.
+    //   geo_location
+    //     → the geohash must be DERIVED from the coordinates (updateLocation
+    //       callable), else a user could hand-write a hash and surface in
+    //       discovery for a city they aren't in.
+    //   cert_paths
+    //     → set only by submitCertification, which checks every path belongs to
+    //       the caller; otherwise a teacher could point at someone else's
+    //       certificate and be verified on their credentials.
+    //   gallery
+    //     → addGalleryPhoto/removeGalleryPhoto: each entry must be a Storage
+    //       path inside the caller's own folder (so nobody can show a remote
+    //       image to other users), and the 6-photo cap needs counting, which
+    //       rules cannot do.
+    //   video_links
+    //     → setVideoLinks: embedded in a WebView for other users, so the host
+    //       must be allow-listed (YouTube/Vimeo) — an arbitrary URL here is a
+    //       phishing surface. Rules cannot validate list contents.
+    //   avg_rating / total_reviews / rating_sum
+    //     → owned by the onReviewWritten trigger. A self-writable rating is not
+    //       a rating: every teacher would be a 5.0 with 200 reviews.
+    match /users/{uid} {
+      allow read: if isSignedIn();
+      allow create: if false;
+      allow update: if isOwner(uid)
+                    && request.resource.data.uid == resource.data.uid
+                    && request.resource.data.role == resource.data.role
+                    && request.resource.data.sub_status == resource.data.sub_status
+                    && request.resource.data.verified_status == resource.data.verified_status
+                    && request.resource.data.is_banned == resource.data.is_banned
+                    && request.resource.data.geo_location == resource.data.geo_location
+                    && request.resource.data.get('cert_paths', [])
+                       == resource.data.get('cert_paths', [])
+                    && request.resource.data.get('gallery', [])
+                       == resource.data.get('gallery', [])
+                    && request.resource.data.get('video_links', [])
+                       == resource.data.get('video_links', [])
+                    && request.resource.data.get('avg_rating', 0)
+                       == resource.data.get('avg_rating', 0)
+                    && request.resource.data.get('total_reviews', 0)
+                       == resource.data.get('total_reviews', 0)
+                    && request.resource.data.get('rating_sum', 0)
+                       == resource.data.get('rating_sum', 0);
+      allow delete: if false;
+    }
+
+    // ── Reviews ─────────────────────────────────────────────────
+    // Written ONLY by submitReview (which requires a match with the teacher) and
+    // moderated by approveReview/rejectReview. A client that could write here
+    // could rate a teacher it never met, publish its own review without
+    // moderation, or forge one under someone else's name.
+    //
+    // Readable when APPROVED — that is what "published on the profile" means. A
+    // reviewer may additionally read their own review in any state, so the app
+    // can show "awaiting approval" or a rejection instead of silently swallowing
+    // it. Admins read everything, because the moderation queue is pending ones.
+    //
+    // A list query only succeeds if every document it could return passes, so the
+    // public profile must ask for `status == "approved"` explicitly. That is the
+    // intent: nobody can enumerate pending or rejected reviews of a teacher.
+    match /reviews/{reviewId} {
+      allow read: if isSignedIn()
+                  && (resource.data.status == 'approved'
+                      || resource.data.reviewer_id == request.auth.uid
+                      || hasRole('admin'));
+      allow write: if false;
+    }
+
+    // ── Swipes ──────────────────────────────────────────────────
+    // Written ONLY by recordSwipe. A client that could write its own swipe doc
+    // would bypass the quota transaction entirely, and could forge the *other*
+    // side of a mutual like to manufacture a match with someone who never
+    // swiped on them. Owners may read their own history.
+    match /swipes/{uid}/sent/{targetId} {
+      allow read: if isOwner(uid);
+      allow write: if false;
+    }
+
+    // DELIBERATELY NOT GRANTED: a collection-group rule on `sent`.
+    //
+    // getCandidates runs `collectionGroup("sent").where("target_id", "==", me)`
+    // to rank people who already liked you first in your deck. That runs in a
+    // Cloud Function via the Admin SDK, which bypasses these rules.
+    //
+    // The same query from a client would reveal exactly WHO liked you — which is
+    // the one thing the mutual-swipe model must not disclose. Without a
+    // `match /{path=**}/sent/{doc}` rule, collection-group reads are denied by
+    // default. Do not add one.
+
+    // ── Swipe quotas ────────────────────────────────────────────
+    // Read-only to its owner (the quota banner); only recordSwipe increments it.
+    match /swipeQuotas/{uid} {
+      allow read: if isOwner(uid);
+      allow write: if false;
+    }
+
+    // ── Matches ─────────────────────────────────────────────────
+    // Created server-side on a mutual right-swipe. Visible only to the two
+    // participants — a match is the gate that unlocks chat, so nobody outside it
+    // may even see that it exists.
+    match /matches/{matchId} {
+      allow read: if isSignedIn()
+                  && request.auth.uid in resource.data.participants;
+      allow write: if false;
+    }
+
+    // ── Messages ────────────────────────────────────────────────
+    // Chat is gated on the match: only the two people who BOTH swiped right on
+    // each other can read or write this thread. A match is the consent record,
+    // so it is the thing we check.
+    //
+    // `is_banned` is re-checked on every send, deliberately: a Firebase ID token
+    // stays valid for up to an hour after an admin bans someone, so a check that
+    // relied only on the token would let a banned user keep messaging the person
+    // they were banned for harassing. Reading the doc costs one lookup; that is
+    // the right trade here.
+    function inMatch(matchId) {
+      return isSignedIn()
+             && request.auth.uid in
+                get(/databases/$(database)/documents/matches/$(matchId)).data.participants;
+    }
+    function notBanned() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid))
+             .data.is_banned == false;
+    }
+
+    // A block must actually stop the messages, not merely hide the thread. The
+    // UI can be bypassed; this cannot. Checked in BOTH directions, because a
+    // block is symmetric — the blocked party must not be able to keep writing
+    // to someone who wanted them gone.
+    function notBlocked(otherUid) {
+      return !exists(/databases/$(database)/documents/blocks/$(request.auth.uid)/blocked/$(otherUid))
+             && !exists(/databases/$(database)/documents/blocks/$(otherUid)/blocked/$(request.auth.uid));
+    }
+
+    match /matches/{matchId}/messages/{messageId} {
+      allow read: if inMatch(matchId);
+      // The other participant is whoever in the match is not me.
+      allow create: if inMatch(matchId)
+                    && notBanned()
+                    && notBlocked(
+                         get(/databases/$(database)/documents/matches/$(matchId))
+                           .data.participants[0] == request.auth.uid
+                         ? get(/databases/$(database)/documents/matches/$(matchId))
+                             .data.participants[1]
+                         : get(/databases/$(database)/documents/matches/$(matchId))
+                             .data.participants[0]
+                       )
+                    // You may only send AS yourself — no forging the other side
+                    // of a conversation.
+                    && request.resource.data.sender_id == request.auth.uid
+                    && request.resource.data.text is string
+                    && request.resource.data.text.size() > 0
+                    && request.resource.data.text.size() <= 2000;
+      // History is immutable: nobody edits or deletes what was said, including
+      // the sender. Moderation happens server-side (Phase 8).
+      allow update, delete: if false;
+    }
+
+    // ── Job Cards ───────────────────────────────────────────────
+    // Readable by any signed-in user (teachers swipe them; institutions see
+    // their own). Written ONLY by upsertJobCard/setJobCardStatus, because:
+    //   - the geohash must be DERIVED from the institution's verified city, not
+    //     supplied, or a card could surface in a city it isn't in;
+    //   - `inst_id`, `status` and `applicant_count` would otherwise be forgeable
+    //     — an institution could inflate its applicant count, or post a card as
+    //     somebody else.
+    match /jobCards/{jobId} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+
+    // ── Applications ────────────────────────────────────────────
+    // A teacher's application to a job card. Written only by applyToJob.
+    // Readable by the two parties involved — and by NOBODY else: who has applied
+    // for a job is confidential to the applicant and the institution.
+    match /applications/{applicationId} {
+      allow read: if isSignedIn()
+                  && (request.auth.uid == resource.data.teacher_id
+                      || request.auth.uid == resource.data.inst_id);
+      allow write: if false;
+    }
+
+    // ── Blocks ──────────────────────────────────────────────────
+    // Written only by blockUser. The owner may read their own block list (the
+    // app needs it to grey out already-blocked people).
+    //
+    // NOT readable by the person who was blocked: telling someone "you have been
+    // blocked by X" hands a harasser the information that they have been noticed,
+    // and by whom.
+    match /blocks/{uid}/blocked/{targetId} {
+      allow read: if isOwner(uid);
+      allow write: if false;
+    }
+
+    // ── Reports ─────────────────────────────────────────────────
+    // Written only by reportUser. Readable ONLY by admins — a report names the
+    // person who made it, and a reporter whose identity can leak is a reporter
+    // who stops reporting.
+    match /reports/{reportId} {
+      allow read: if hasRole('admin');
+      allow write: if false;
+    }
+
+    // ── Notifications ───────────────────────────────────────────
+    // The in-app activity feed. Written ONLY server-side (a match, a message, a
+    // verification decision) — a client that could write here could fabricate
+    // "you matched with X" or "you're verified".
+    //
+    // The owner may flip `read` (and only `read`) so opening the inbox clears
+    // the badge without a round-trip, and may delete an item to dismiss it.
+    match /notifications/{uid}/items/{itemId} {
+      allow read: if isOwner(uid);
+      allow create: if false;
+      allow update: if isOwner(uid)
+                    && request.resource.data.diff(resource.data)
+                       .affectedKeys().hasOnly(['read']);
+      allow delete: if isOwner(uid);
+    }
+
+    // ── Audit log ───────────────────────────────────────────────
+    // Append-only record of every admin action (approve, reject, ban, view a
+    // certificate). Written server-side only, and readable ONLY by admins:
+    // it names who did what to whom.
+    //
+    // Nobody may update or delete an entry — including the admin who wrote it.
+    // An audit log you can edit is not an audit log.
+    match /auditLog/{entryId} {
+      allow read: if hasRole('admin');
+      allow write: if false;
+    }
+
+    // ── Quota config ────────────────────────────────────────────
+    // Admin-tunable limits (`config/quotas`), read by the functions via the
+    // Admin SDK. No client access at all.
+    match /config/{doc} {
+      allow read, write: if false;
+    }
+
+    // ── Default deny ────────────────────────────────────────────
+    // Everything not matched above is locked until a future phase grants access.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
