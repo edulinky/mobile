@@ -1,5 +1,9 @@
+import 'dart:convert';
+import 'dart:math';
+import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import '../../../core/firebase/firebase_refs.dart';
 
 /// Thin wrapper over FirebaseAuth + the auth Cloud Functions. Keeps Firebase
@@ -73,6 +77,63 @@ class AuthRepository {
     );
     return Fb.auth.signInWithCredential(credential);
   }
+
+  /// Runs the native Sign in with Apple sheet and signs the user into Firebase.
+  ///
+  /// Returns `null` when the user cancels — not an error. Like Google, a new
+  /// Apple user is signed in with **no `role` claim** and must be routed through
+  /// role selection (`/register/2`).
+  ///
+  /// Two Apple-specific quirks are handled here:
+  /// - **Nonce**: Firebase requires a SHA-256 nonce (with the raw value passed
+  ///   to `credential`) to defend against identity-token replay.
+  /// - **Name once only**: Apple returns the user's name on the *first*
+  ///   authorization and never again, so we capture it onto the Firebase
+  ///   profile immediately or the account would be permanently nameless.
+  Future<UserCredential?> signInWithApple() async {
+    final rawNonce = _generateNonce();
+    final AuthorizationCredentialAppleID apple;
+    try {
+      apple = await SignInWithApple.getAppleIDCredential(
+        scopes: const [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+        nonce: _sha256(rawNonce),
+      );
+    } on SignInWithAppleAuthorizationException catch (e) {
+      if (e.code == AuthorizationErrorCode.canceled) return null;
+      rethrow;
+    }
+
+    final credential = OAuthProvider('apple.com').credential(
+      idToken: apple.identityToken,
+      rawNonce: rawNonce,
+    );
+    final userCred = await Fb.auth.signInWithCredential(credential);
+
+    final fullName = [apple.givenName, apple.familyName]
+        .where((p) => p != null && p.isNotEmpty)
+        .join(' ')
+        .trim();
+    final current = userCred.user;
+    if (fullName.isNotEmpty &&
+        (current?.displayName == null || current!.displayName!.isEmpty)) {
+      await current?.updateDisplayName(fullName);
+    }
+    return userCred;
+  }
+
+  static String _generateNonce([int length = 32]) {
+    const chars =
+        '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-._';
+    final rand = Random.secure();
+    return List.generate(length, (_) => chars[rand.nextInt(chars.length)])
+        .join();
+  }
+
+  static String _sha256(String input) =>
+      sha256.convert(utf8.encode(input)).toString();
 
   Future<void> signOut() async {
     // Sign out of Google too, so the next person on this phone gets the account

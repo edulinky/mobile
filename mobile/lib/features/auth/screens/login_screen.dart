@@ -1,7 +1,9 @@
+import 'dart:io' show Platform;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import '../../../core/extensions/l10n_extension.dart';
 import '../../../core/theme/app_theme.dart';
 import '../providers/auth_controller.dart';
@@ -54,29 +56,46 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
   }
 
-  Future<void> _google() async {
+  Future<void> _google() => _oauth(
+        () => ref.read(authRepositoryProvider).signInWithGoogle(),
+        provider: 'google',
+        failMessage: context.l10n.errGoogleSignInFailed,
+      );
+
+  Future<void> _apple() => _oauth(
+        () => ref.read(authRepositoryProvider).signInWithApple(),
+        provider: 'apple',
+        failMessage: context.l10n.errAppleSignInFailed,
+      );
+
+  /// Shared flow for the federated (Google/Apple) buttons. A returning user has
+  /// a role claim and the router's redirect guard takes them home; a brand-new
+  /// user has no role yet, so we send them into role selection with their
+  /// name/email pre-filled — step 3 skips account creation because the provider
+  /// already made the account.
+  Future<void> _oauth(
+    Future<UserCredential?> Function() signIn, {
+    required String provider,
+    required String failMessage,
+  }) async {
     if (_loading) return;
     setState(() => _loading = true);
     try {
-      final cred = await ref.read(authRepositoryProvider).signInWithGoogle();
-      if (cred == null) return; // user dismissed the picker — no error
-      // A returning user already has a role claim; the router's redirect guard
-      // takes them home. A brand-new Google user has no role yet, so send them
-      // into role selection with their Google name/email pre-filled — step 3
-      // skips account creation since Google already made the account.
+      final cred = await signIn();
+      if (cred == null) return; // user cancelled — no error
       final token = await cred.user?.getIdTokenResult();
       final hasRole = token?.claims?['role'] != null;
       if (!mounted || hasRole) return;
       context.push('/register/2', extra: {
-        'provider': 'google',
+        'provider': provider,
         'fullName': cred.user?.displayName ?? '',
         'email': cred.user?.email ?? '',
         'password': '',
       });
     } on FirebaseAuthException catch (e) {
-      _snack(e.message ?? context.l10n.errGoogleSignInFailed);
+      _snack(e.message ?? failMessage);
     } catch (_) {
-      _snack(context.l10n.errGoogleSignInFailed);
+      _snack(failMessage);
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -159,6 +178,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               const Expanded(child: Divider()),
             ]),
             const SizedBox(height: 16),
+            // Apple requires Sign in with Apple to be offered — and at least as
+            // prominently as other providers — whenever a third-party login is
+            // present (App Store Guideline 4.8). iOS-only: on other platforms it
+            // needs a separate web-flow setup we don't have.
+            if (Platform.isIOS) ...[
+              SignInWithAppleButton(
+                onPressed: _apple, // _oauth no-ops while already loading
+                text: l10n.continueWithApple,
+                height: 52,
+                style: SignInWithAppleButtonStyle.black,
+                borderRadius: BorderRadius.circular(14),
+              ),
+              const SizedBox(height: 12),
+            ],
             OutlinedButton.icon(
               style: OutlinedButton.styleFrom(
                 foregroundColor: AppColors.text,
