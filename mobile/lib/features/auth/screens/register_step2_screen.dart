@@ -14,11 +14,16 @@ class RegisterStep2Screen extends StatefulWidget {
     required this.email,
     required this.password,
     this.fullName = '',
+    this.provider = '',
   });
 
   final String email;
   final String password;
   final String fullName;
+
+  /// '' for the email/password flow, 'google' when the account was already
+  /// created by Google sign-in (so step 3 skips account creation).
+  final String provider;
 
   @override
   State<RegisterStep2Screen> createState() => _RegisterStep2ScreenState();
@@ -34,6 +39,7 @@ class _RegisterStep2ScreenState extends State<RegisterStep2Screen> {
       'email':    widget.email,
       'password': widget.password,
       'role':     role.name,
+      'provider': widget.provider,
     });
   }
 

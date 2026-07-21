@@ -54,6 +54,34 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
   }
 
+  Future<void> _google() async {
+    if (_loading) return;
+    setState(() => _loading = true);
+    try {
+      final cred = await ref.read(authRepositoryProvider).signInWithGoogle();
+      if (cred == null) return; // user dismissed the picker — no error
+      // A returning user already has a role claim; the router's redirect guard
+      // takes them home. A brand-new Google user has no role yet, so send them
+      // into role selection with their Google name/email pre-filled — step 3
+      // skips account creation since Google already made the account.
+      final token = await cred.user?.getIdTokenResult();
+      final hasRole = token?.claims?['role'] != null;
+      if (!mounted || hasRole) return;
+      context.push('/register/2', extra: {
+        'provider': 'google',
+        'fullName': cred.user?.displayName ?? '',
+        'email': cred.user?.email ?? '',
+        'password': '',
+      });
+    } on FirebaseAuthException catch (e) {
+      _snack(e.message ?? context.l10n.errGoogleSignInFailed);
+    } catch (_) {
+      _snack(context.l10n.errGoogleSignInFailed);
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
   Future<void> _forgotPassword() async {
     final l10n = context.l10n;
     final email = _emailCtrl.text.trim();
@@ -141,7 +169,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ),
               icon: const Icon(Icons.g_mobiledata_rounded, size: 24),
               label: Text(l10n.continueWithGoogle),
-              onPressed: () => _snack(context.l10n.msgGoogleComingSoon),
+              onPressed: _loading ? null : _google,
             ),
             const SizedBox(height: 24),
             Row(

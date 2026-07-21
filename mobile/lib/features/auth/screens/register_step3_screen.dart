@@ -69,8 +69,11 @@ class _RegisterStep3ScreenState extends ConsumerState<RegisterStep3Screen> {
     final role = data['role'] ?? 'student';
     final email = data['email'] ?? '';
     final password = data['password'] ?? '';
+    // In the Google flow the account already exists (and the user is signed in),
+    // so there is no password and we skip account creation below.
+    final isGoogle = (data['provider'] ?? '') == 'google';
     final displayName = _nameCtrl.text.trim();
-    if (email.isEmpty || password.isEmpty) {
+    if (!isGoogle && (email.isEmpty || password.isEmpty)) {
       _snack(l10n.errRestartRegistration);
       return;
     }
@@ -82,13 +85,16 @@ class _RegisterStep3ScreenState extends ConsumerState<RegisterStep3Screen> {
     setState(() => _loading = true);
     final repo = ref.read(authRepositoryProvider);
 
-    // 1) Create the Firebase Auth account (also signs the user in).
-    try {
-      await repo.createAccount(email: email, password: password);
-    } on FirebaseAuthException catch (e) {
-      _snack(e.message ?? 'Could not create your account.');
-      if (mounted) setState(() => _loading = false);
-      return;
+    // 1) Create the Firebase Auth account (also signs the user in). Skipped for
+    //    Google, where sign-in already created and authenticated the account.
+    if (!isGoogle) {
+      try {
+        await repo.createAccount(email: email, password: password);
+      } on FirebaseAuthException catch (e) {
+        _snack(e.message ?? 'Could not create your account.');
+        if (mounted) setState(() => _loading = false);
+        return;
+      }
     }
 
     // 2) Set the role claim + write the user doc. On failure, roll back the

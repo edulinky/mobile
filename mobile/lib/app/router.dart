@@ -114,6 +114,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           email:    data['email'] ?? '',
           password: data['password'] ?? '',
           fullName: data['fullName'] ?? '',
+          provider: data['provider'] ?? '',
         );
       }),
       GoRoute(path: '/register/3',  builder: (ctx, state) {

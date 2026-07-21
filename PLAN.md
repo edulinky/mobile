@@ -390,10 +390,28 @@ Standalone **static site** (HTML/CSS, one inline script — no framework, no bui
 - Host on Render as a **Static Site** at the apex domain; admin panel on a **separate subdomain**. See `web/README.md`.
 - **Before publish [You]:** the legal pages are drafts — a lawyer must review them, and the `[BRACKETED]` placeholders (legal entity, address, **minimum age**, governing jurisdiction) must be filled. Confirm the `support@`/`privacy@`/`hello@`/`sales@` addresses exist.
 
+### Hosting — both sites are FREE Render Static Sites from this one repo
+
+Everything lives in one **private** monorepo (`edulinky/mobile`, `main`). The admin is a pure client-side Firebase app — no API routes, server actions, or server-only imports — so it builds to a **static export** (`output: "export"` in `admin/next.config.ts` → `admin/out/`). That means **both** the landing page and the admin deploy as **free Render Static Sites** — always-on, no cold starts, no server bill. (A Render *Web Service* would have been the only paid/cold-start path; the admin doesn't need one.)
+
+| | Landing (`web/`) | Admin (`admin/`) |
+|---|---|---|
+| Render type | Static Site | Static Site |
+| Root Directory | `web` | `admin` |
+| Build Command | *(empty)* | `npm install && npm run build` |
+| Publish Directory | `.` | `out` |
+| Build Filter (Included Paths) | `web/**` | `admin/**` |
+| Env vars | none | `NEXT_PUBLIC_FIREBASE_*` (the web config — not secrets) |
+| Domain | apex `edulinky.com` | subdomain `admin.edulinky.com` |
+
+- **Clean URLs both work out of the box.** `web/` uses folder-index pages; Next's export serves `/reports` from `reports.html` (no `trailingSlash`, deliberately — it would break the `usePathname` active-nav check).
+- **No link from the landing page to the admin**, by design — a separate subdomain nobody discovers from the marketing site.
+- After the admin is deployed, set `ADMIN_URL` in `functions/.env` to `https://admin.edulinky.com` and redeploy `reportUser` + the alert functions, so the "new report / new review / new signup" emails link to the live queue.
+
 ### Phase 10 — Polish & Deployment
 - **Mobile:** `flutter build appbundle` (Android) + `flutter build ipa` (iOS); submit to Play Store / App Store
-- **Admin web:** Vercel deployment, root dir `admin/`, set `NEXT_PUBLIC_FIREBASE_*` env vars
-- **Marketing/legal site:** Render Static Site, root dir `web/`, apex domain (admin on a subdomain)
+- **Admin web:** Render **Static Site** (static export), root dir `admin/`, publish `out`, set `NEXT_PUBLIC_FIREBASE_*` — free, no cold starts
+- **Marketing/legal site:** Render Static Site, root dir `web/`, publish `.`, apex domain (admin on a subdomain)
 - **Functions:** `firebase deploy --only functions` from monorepo root
 - Register RevenueCat webhook URL (Cloud Function HTTPS endpoint) in RevenueCat dashboard
 - `firebase deploy --only firestore:rules,storage:rules`

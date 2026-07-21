@@ -22,6 +22,9 @@
   "continueWithGoogle": "Continue with Google",
   "@continueWithGoogle": {},
 
+  "errGoogleSignInFailed": "Google sign-in failed. Please try again.",
+  "@errGoogleSignInFailed": {},
+
   "fullName": "Full name",
   "@fullName": {},
 

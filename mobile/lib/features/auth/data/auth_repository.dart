@@ -1,10 +1,16 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import '../../../core/firebase/firebase_refs.dart';
 
 /// Thin wrapper over FirebaseAuth + the auth Cloud Functions. Keeps Firebase
 /// types out of the UI layer.
 class AuthRepository {
   const AuthRepository();
+
+  /// We only need the email scope for Firebase auth; the iOS/Android client id
+  /// is read from `GoogleService-Info.plist` / `google-services.json`, so it is
+  /// not passed here.
+  static final GoogleSignIn _google = GoogleSignIn(scopes: const ['email']);
 
   /// Emits on sign-in/out AND on token refresh — the latter is how a freshly set
   /// role claim reaches the app after [completeRegistration].
@@ -51,7 +57,33 @@ class AuthRepository {
     await Fb.auth.currentUser?.getIdToken(true);
   }
 
-  Future<void> signOut() => Fb.auth.signOut();
+  /// Runs the native Google account picker and signs the user into Firebase.
+  ///
+  /// Returns `null` when the user backs out of the picker — a cancellation, not
+  /// an error, so callers stay silent. A brand-new Google user is signed in but
+  /// has **no `role` claim**; the caller must route them through role selection
+  /// (`/register/2`) so `completeRegistration` can finish the account.
+  Future<UserCredential?> signInWithGoogle() async {
+    final account = await _google.signIn();
+    if (account == null) return null; // user dismissed the picker
+    final auth = await account.authentication;
+    final credential = GoogleAuthProvider.credential(
+      accessToken: auth.accessToken,
+      idToken: auth.idToken,
+    );
+    return Fb.auth.signInWithCredential(credential);
+  }
+
+  Future<void> signOut() async {
+    // Sign out of Google too, so the next person on this phone gets the account
+    // picker instead of being silently signed back into the previous account.
+    try {
+      await _google.signOut();
+    } catch (_) {
+      // Not worth failing a sign-out over.
+    }
+    await Fb.auth.signOut();
+  }
 
   Future<void> sendPasswordReset(String email) =>
       Fb.auth.sendPasswordResetEmail(email: email);

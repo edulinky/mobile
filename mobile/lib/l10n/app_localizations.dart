@@ -136,6 +136,12 @@ abstract class AppLocalizations {
   /// **'Continue with Google'**
   String get continueWithGoogle;
 
+  /// No description provided for @errGoogleSignInFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Google sign-in failed. Please try again.'**
+  String get errGoogleSignInFailed;
+
   /// No description provided for @fullName.
   ///
   /// In en, this message translates to:

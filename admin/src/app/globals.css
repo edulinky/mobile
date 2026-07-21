@@ -67,6 +67,20 @@ button:disabled { opacity: .5; cursor: default; }
 .btn-primary { background: var(--sky-dark); color: #fff; }
 .btn-danger { background: #fff; color: var(--error); border-color: #fecaca; }
 .btn-ghost { background: #fff; color: var(--text-2); border-color: var(--sky-light); }
+.btn-google {
+  width: 100%; display: flex; align-items: center; justify-content: center;
+  gap: 10px; background: #fff; color: var(--text-2);
+  border-color: var(--sky-light);
+}
+.btn-google:hover:not(:disabled) { background: #f8fafc; }
+
+.or-divider {
+  display: flex; align-items: center; gap: 12px;
+  margin: 16px 0; color: var(--text-3); font-size: 12px;
+}
+.or-divider::before, .or-divider::after {
+  content: ""; flex: 1; height: 1px; background: var(--sky-light);
+}
 
 .badge {
   display: inline-block; padding: 3px 9px; border-radius: 20px;
