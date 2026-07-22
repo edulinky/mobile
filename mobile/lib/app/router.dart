@@ -9,6 +9,7 @@ import '../features/auth/models/app_user.dart';
 import '../features/auth/providers/auth_controller.dart';
 import '../features/auth/screens/splash_screen.dart';
 import '../features/auth/screens/login_screen.dart';
+import '../features/auth/screens/unsupported_account_screen.dart';
 import '../features/auth/screens/register_step1_screen.dart';
 import '../features/auth/screens/register_step2_screen.dart';
 import '../features/auth/screens/register_step3_screen.dart';
@@ -97,6 +98,14 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         return onAuthRoute ? null : '/';
       }
 
+      // Signed in with a role the app has no experience for (e.g. an admin
+      // account, which belongs to the web panel). Park them on a clean screen
+      // rather than falling through to the student deck, which then errors with
+      // "this role has no discovery feed".
+      if (!user.isAppRole) {
+        return loc == '/unsupported' ? null : '/unsupported';
+      }
+
       // Signed in with a role: bounce off the entry screens to the role's home.
       if (loc == '/' || loc == '/login' || loc == '/register/1') {
         return roleHome(user.role);
@@ -107,6 +116,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       // ── Auth ────────────────────────────────────────────────────────────────
       GoRoute(path: '/',            builder: (ctx, s) => const SplashScreen()),
       GoRoute(path: '/login',       builder: (ctx, s) => const LoginScreen()),
+      GoRoute(path: '/unsupported', builder: (ctx, s) => const UnsupportedAccountScreen()),
       GoRoute(path: '/register/1',  builder: (ctx, s) => const RegisterStep1Screen()),
       GoRoute(path: '/register/2',  builder: (ctx, state) {
         final data = _registrationExtra(state.extra);

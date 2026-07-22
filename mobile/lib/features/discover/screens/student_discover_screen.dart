@@ -26,8 +26,9 @@ class StudentDiscoverScreen extends ConsumerWidget {
     // put back by the controller, so this is the only thing left to say.
     ref.listen<String?>(teacherDeckProvider.select((s) => s.error), (_, error) {
       if (error == null) return;
+      final message = error == kDeckGenericError ? l10n.errorGeneric : error;
       ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(error)));
+          .showSnackBar(SnackBar(content: Text(message)));
       controller.clearError();
     });
 

@@ -204,6 +204,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorGeneric => 'Something went wrong. Please try again.';
 
   @override
+  String get unsupportedAccountTitle => 'Use the web admin panel';
+
+  @override
+  String get unsupportedAccountBody =>
+      'This account isn\'t set up for the app. Admin accounts are managed from the web admin panel.';
+
+  @override
   String get errorNetworkUnavailable => 'No internet connection.';
 
   @override

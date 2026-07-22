@@ -32,12 +32,17 @@ class _TeacherDiscoverScreenState extends ConsumerState<TeacherDiscoverScreen>
   /// The Job Cards deck, loaded from getJobCards. Applying removes the card.
   List<JobCard>? _jobQueue;
   bool _jobsLoading = true;
+  /// Jobs are fetched exactly once, and only after the teacher is approved —
+  /// an unapproved teacher's getJobCards call fails with "awaiting
+  /// verification", and they only ever see the pending notice anyway.
+  bool _jobsRequested = false;
 
   @override
   void initState() {
     super.initState();
     _tabs = TabController(length: 2, vsync: this);
-    _loadJobs();
+    // Jobs load lazily once approval is known (see build) — not here, because an
+    // unapproved teacher must never call getJobCards.
   }
 
   @override
@@ -51,15 +56,25 @@ class _TeacherDiscoverScreenState extends ConsumerState<TeacherDiscoverScreen>
     try {
       final cards = await ref.read(jobsRepositoryProvider).getJobCards();
       if (mounted) setState(() => _jobQueue = cards);
-    } catch (e) {
+    } catch (e, st) {
+      debugPrint('load jobs failed: $e\n$st');
       if (mounted) {
         setState(() => _jobQueue = const []);
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('$e')));
+        _snack(e);
       }
     } finally {
       if (mounted) setState(() => _jobsLoading = false);
     }
+  }
+
+  /// Shows a failure as a clean, localised line — never the raw `'$e'`, which
+  /// can carry the `[code] …` prefix and a full async stack trace (a snackbar
+  /// then balloons to fill the screen).
+  void _snack(Object e) {
+    final msg = friendlyDeckError(e);
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(msg == kDeckGenericError ? context.l10n.errorGeneric : msg),
+    ));
   }
 
   void _swipe(bool interested, TeacherDiscoverItem item) {
@@ -82,8 +97,7 @@ class _TeacherDiscoverScreenState extends ConsumerState<TeacherDiscoverScreen>
       if (!mounted) return;
       // Put it back — the application did not happen.
       setState(() => _jobQueue = [job, ...?_jobQueue]);
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('$e')));
+      _snack(e);
     });
   }
 
@@ -110,9 +124,19 @@ class _TeacherDiscoverScreenState extends ConsumerState<TeacherDiscoverScreen>
           orElse: () => false,
         );
 
+    // Fetch jobs the first time we know the teacher is approved. Deferred to a
+    // post-frame callback so we never call setState during build.
+    if (isApproved && !_jobsRequested) {
+      _jobsRequested = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _loadJobs();
+      });
+    }
+
     ref.listen<String?>(studentDeckProvider.select((s) => s.error), (_, error) {
       if (error == null || !isApproved) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
+      final message = error == kDeckGenericError ? l10n.errorGeneric : error;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
       ref.read(studentDeckProvider.notifier).clearError();
     });
 

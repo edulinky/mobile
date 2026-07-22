@@ -17,4 +17,12 @@ class AppUser {
   final String? verifiedStatus;
 
   bool get hasRole => role != null && role!.isNotEmpty;
+
+  /// The three roles the mobile app is built for. An `admin` (web-panel only) or
+  /// any future/unknown role is signed in but has no app experience, so the
+  /// router parks them on the unsupported-account screen instead of a broken
+  /// role home.
+  static const appRoles = {'student', 'teacher', 'institution'};
+
+  bool get isAppRole => role != null && appRoles.contains(role);
 }

@@ -466,6 +466,18 @@ abstract class AppLocalizations {
   /// **'Something went wrong. Please try again.'**
   String get errorGeneric;
 
+  /// No description provided for @unsupportedAccountTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the web admin panel'**
+  String get unsupportedAccountTitle;
+
+  /// No description provided for @unsupportedAccountBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This account isn\'t set up for the app. Admin accounts are managed from the web admin panel.'**
+  String get unsupportedAccountBody;
+
   /// No description provided for @errorNetworkUnavailable.
   ///
   /// In en, this message translates to:

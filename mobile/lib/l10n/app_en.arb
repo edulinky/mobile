@@ -192,6 +192,12 @@
   "errorGeneric": "Something went wrong. Please try again.",
   "@errorGeneric": {},
 
+  "unsupportedAccountTitle": "Use the web admin panel",
+  "@unsupportedAccountTitle": {},
+
+  "unsupportedAccountBody": "This account isn't set up for the app. Admin accounts are managed from the web admin panel.",
+  "@unsupportedAccountBody": {},
+
   "errorNetworkUnavailable": "No internet connection.",
   "@errorNetworkUnavailable": {},
 
