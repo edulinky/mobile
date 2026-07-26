@@ -1,0 +1,12 @@
+# Netlify build config for the EduLinky admin panel (Next.js static export).
+#
+# Set the Netlify site's "Base directory" to `admin` so this file is picked up;
+# the paths below are then relative to that base. Leave the Build command and
+# Publish directory fields BLANK in the Netlify UI — these values win.
+#
+# The 6 NEXT_PUBLIC_FIREBASE_* env vars must be set in the Netlify UI (they are
+# inlined at build time). After deploy, add the site's domain to
+# Firebase → Auth → Settings → Authorized domains for admin Google sign-in.
+[build]
+  command = "npm run build"
+  publish = "out"
