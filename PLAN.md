@@ -387,31 +387,31 @@ Alerts are **best effort** — a failing mailbox must never roll back the thing 
 Standalone **static site** (HTML/CSS, one inline script — no framework, no build), separate from `admin/` so nothing is shared between the public site and the admin panel. **No link to the admin dashboard anywhere, by design.**
 - `index.html` (hero + app mockup, how-it-works, roles, **pricing with a billing-period toggle**, safety, FAQ), `privacy/index.html` → `/privacy`, `terms/index.html` → `/terms`. Folder-per-page so the clean URLs the paywall links to (`edulinky.com/terms`, `/privacy`) resolve on any static host.
 - **The Terms page carries the App Store Guideline 1.2 EULA clause** — zero tolerance for objectionable content/abusive users + the 24-hour action commitment — which was an outstanding store-compliance item. It also states EduLinky is a *platform*, not an employer/agency (matters for job cards), and the store-billed auto-renew/cancel terms.
-- Host on Render as a **Static Site** at the apex domain; admin panel on a **separate subdomain**. See `web/README.md`.
+- Host on **Netlify** as a static site at the apex domain; admin panel as a **separate Netlify site**. See `web/README.md`.
 - **Before publish [You]:** the legal pages are drafts — a lawyer must review them, and the `[BRACKETED]` placeholders (legal entity, address, **minimum age**, governing jurisdiction) must be filled. Confirm the `support@`/`privacy@`/`hello@`/`sales@` addresses exist.
 
-### Hosting — both sites are FREE Render Static Sites from this one repo
+### Hosting — both sites are FREE Netlify static sites from this one repo
 
-Everything lives in one **private** monorepo (`edulinky/mobile`, `main`). The admin is a pure client-side Firebase app — no API routes, server actions, or server-only imports — so it builds to a **static export** (`output: "export"` in `admin/next.config.ts` → `admin/out/`). That means **both** the landing page and the admin deploy as **free Render Static Sites** — always-on, no cold starts, no server bill. (A Render *Web Service* would have been the only paid/cold-start path; the admin doesn't need one.)
+Everything lives in one **private** monorepo (`edulinky/mobile`, `main`). The admin is a pure client-side Firebase app — no API routes, server actions, or server-only imports — so it builds to a **static export** (`output: "export"` in `admin/next.config.ts` → `admin/out/`). That means **both** the landing page and the admin deploy as **free Netlify static sites** — always-on, no cold starts, no server bill. (Landing is already live on Netlify.)
 
 | | Landing (`web/`) | Admin (`admin/`) |
 |---|---|---|
-| Render type | Static Site | Static Site |
-| Root Directory | `web` | `admin` |
-| Build Command | *(empty)* | `npm install && npm run build` |
-| Publish Directory | `.` | `out` |
-| Build Filter (Included Paths) | `web/**` | `admin/**` |
+| Host | Netlify (static) | Netlify (static) |
+| Base directory | `web` | `admin` |
+| Build command | *(empty)* | `npm run build` |
+| Publish directory | `web` | `admin/out` |
 | Env vars | none | `NEXT_PUBLIC_FIREBASE_*` (the web config — not secrets) |
-| Domain | apex `edulinky.com` | subdomain `admin.edulinky.com` |
+| Domain | apex `edulinky.com` | separate site / subdomain |
 
-- **Clean URLs both work out of the box.** `web/` uses folder-index pages; Next's export serves `/reports` from `reports.html` (no `trailingSlash`, deliberately — it would break the `usePathname` active-nav check).
-- **No link from the landing page to the admin**, by design — a separate subdomain nobody discovers from the marketing site.
-- After the admin is deployed, set `ADMIN_URL` in `functions/.env` to `https://admin.edulinky.com` and redeploy `reportUser` + the alert functions, so the "new report / new review / new signup" emails link to the live queue.
+- **Clean URLs both work out of the box.** `web/` uses folder-index pages; Next's static export emits a real `reports.html` per route, which Netlify serves at `/reports` (no `trailingSlash`, deliberately — it would break the `usePathname` active-nav check).
+- **Firebase authorized domains:** add the admin's Netlify domain under Firebase → Auth → Settings → Authorized domains, or the admin's **Google sign-in** popup throws `auth/unauthorized-domain`.
+- **No link from the landing page to the admin**, by design — a separate site nobody discovers from the marketing site.
+- After the admin is deployed, set `ADMIN_URL` in `functions/.env` to the admin's URL and redeploy `reportUser` + the alert functions, so the "new report / new review / new signup" emails link to the live queue.
 
 ### Phase 10 — Polish & Deployment
 - **Mobile:** `flutter build appbundle` (Android) + `flutter build ipa` (iOS); submit to Play Store / App Store
-- **Admin web:** Render **Static Site** (static export), root dir `admin/`, publish `out`, set `NEXT_PUBLIC_FIREBASE_*` — free, no cold starts
-- **Marketing/legal site:** Render Static Site, root dir `web/`, publish `.`, apex domain (admin on a subdomain)
+- **Admin web:** Netlify static site (static export), base dir `admin/`, build `npm run build`, publish `admin/out`, set `NEXT_PUBLIC_FIREBASE_*`, add the Netlify domain to Firebase authorized domains — free, no cold starts
+- **Marketing/legal site:** Netlify static site, base dir `web/`, publish `web`, apex domain (admin as a separate site) — already live
 - **Functions:** `firebase deploy --only functions` from monorepo root
 - Register RevenueCat webhook URL (Cloud Function HTTPS endpoint) in RevenueCat dashboard
 - `firebase deploy --only firestore:rules,storage:rules`
