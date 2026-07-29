@@ -1402,6 +1402,12 @@ abstract class AppLocalizations {
   /// **'Job Details'**
   String get jobDetailTitle;
 
+  /// No description provided for @watchIntroVideo.
+  ///
+  /// In en, this message translates to:
+  /// **'Watch intro video'**
+  String get watchIntroVideo;
+
   /// No description provided for @applicantsTitle.
   ///
   /// In en, this message translates to:

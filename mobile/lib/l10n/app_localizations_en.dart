@@ -700,6 +700,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get jobDetailTitle => 'Job Details';
 
   @override
+  String get watchIntroVideo => 'Watch intro video';
+
+  @override
   String get applicantsTitle => 'Applicants';
 
   @override

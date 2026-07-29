@@ -5,6 +5,7 @@ import '../../jobs/data/jobs_repository.dart';
 import '../../jobs/models/job_card.dart';
 import '../../safety/widgets/safety_menu.dart';
 import '../../jobs/widgets/salary_period_x.dart';
+import '../../jobs/widgets/job_detail_sheet.dart';
 import '../models/job_card_model.dart';
 import '../providers/swipe_controller.dart';
 import '../widgets/deck_empty_state.dart';
@@ -292,7 +293,11 @@ class _TeacherDiscoverScreenState extends ConsumerState<TeacherDiscoverScreen>
             child: Stack(
               alignment: Alignment.center,
               children: [
-                for (int i = queue.length - 1; i >= 0 && i >= queue.length - 3; i--)
+                // Render the FRONT of the queue (indices 0..2), not the back —
+                // `isTop` below requires i == 0, so the top card must always be
+                // among what's rendered or nothing is swipeable once the queue
+                // has more than 3 items.
+                for (int i = (queue.length - 1).clamp(0, 2); i >= 0; i--)
                   _buildSwipeCard(context, l10n, queue, i),
               ],
             ),
@@ -338,10 +343,16 @@ class _TeacherDiscoverScreenState extends ConsumerState<TeacherDiscoverScreen>
               onTap: item == null ? null : () => _swipe(false, item)),
           _ActionBtn(
             icon: Icons.info_outline_rounded, color: AppColors.skyDark, size: 40,
-            // Job cards have no user profile to open — only students do.
             onTap: switch (item) {
+              null => null,
               StudentItem s => () => context.push('/profile/${s.student.uid}'),
-              _ => null,
+              // Jobs have no user profile — show the full posting instead. A
+              // sheet, not a push: the data is already in memory (no network
+              // call), and this is institution-owner-only info's read-only
+              // counterpart, not `JobCardDetailScreen` (that screen exposes
+              // edit/close controls and the applicant list — a browsing
+              // teacher must never see either).
+              JobItem j => () => showJobDetailSheet(context, j.job),
             },
           ),
           _ActionBtn(
