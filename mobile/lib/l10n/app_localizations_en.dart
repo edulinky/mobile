@@ -1243,6 +1243,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noMoreJobs => 'No more jobs right now';
 
   @override
+  String get myApplications => 'My Applications';
+
+  @override
+  String get applied => 'Applied';
+
+  @override
+  String get noApplicationsYet => 'No applications yet';
+
+  @override
+  String get noApplicationsYetSubtitle =>
+      'Jobs you apply to will show up here.';
+
+  @override
   String get noMoreJobsSubtitle =>
       'You only see jobs in the subjects you teach. Add a subject to widen your search, or start over to revisit the ones you skipped — jobs you\'ve applied to won\'t come back.';
 

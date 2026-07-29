@@ -223,30 +223,57 @@ class _TeacherDiscoverScreenState extends ConsumerState<TeacherDiscoverScreen>
   Widget _buildTabBar(BuildContext context, dynamic l10n) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
-      child: Container(
-        height: 40,
-        decoration: BoxDecoration(
-          color: AppColors.skyLight.withValues(alpha: 0.4),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: TabBar(
-          controller: _tabs,
-          indicator: BoxDecoration(
-            color: AppColors.skyDark,
-            borderRadius: BorderRadius.circular(10),
+      child: Row(
+        children: [
+          Expanded(
+            child: Container(
+              height: 40,
+              decoration: BoxDecoration(
+                color: AppColors.skyLight.withValues(alpha: 0.4),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: TabBar(
+                controller: _tabs,
+                indicator: BoxDecoration(
+                  color: AppColors.skyDark,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                indicatorSize: TabBarIndicatorSize.tab,
+                dividerColor: Colors.transparent,
+                labelColor: Colors.white,
+                unselectedLabelColor: AppColors.text2,
+                // Same weight in both states, so selecting a tab does not resize it.
+                labelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
+                unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
+                tabs: [
+                  Tab(text: l10n.tabStudents),
+                  Tab(text: l10n.tabJobs),
+                ],
+              ),
+            ),
           ),
-          indicatorSize: TabBarIndicatorSize.tab,
-          dividerColor: Colors.transparent,
-          labelColor: Colors.white,
-          unselectedLabelColor: AppColors.text2,
-          // Same weight in both states, so selecting a tab does not resize it.
-          labelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
-          unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
-          tabs: [
-            Tab(text: l10n.tabStudents),
-            Tab(text: l10n.tabJobs),
-          ],
-        ),
+          const SizedBox(width: 10),
+          // Applying is one-directional (a right swipe on a Job Card IS the
+          // application) so there's nothing on the Jobs tab to show what was
+          // already sent — this is that record.
+          Tooltip(
+            message: l10n.myApplications,
+            child: InkWell(
+              onTap: () => context.push('/teacher/applications'),
+              borderRadius: BorderRadius.circular(10),
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: AppColors.skyLight.withValues(alpha: 0.4),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(Icons.assignment_outlined,
+                    size: 20, color: AppColors.text),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

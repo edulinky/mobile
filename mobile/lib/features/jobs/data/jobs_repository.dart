@@ -78,6 +78,18 @@ class JobsRepository {
 
   // ── Teacher ──────────────────────────────────────────────────
 
+  /// The jobs THIS teacher has applied to, newest first. Rules allow a teacher
+  /// to read applications where `teacher_id` is their own uid, so this is a
+  /// direct query — no callable needed.
+  Stream<List<JobApplication>> watchMyApplications() {
+    return Fb.db
+        .collection('applications')
+        .where('teacher_id', isEqualTo: _uid)
+        .orderBy('created_at', descending: true)
+        .snapshots()
+        .map((s) => s.docs.map(JobApplication.fromDoc).toList());
+  }
+
   Future<List<JobCard>> getJobCards({double? radiusKm}) async {
     final res = await Fb.functions.httpsCallable('getJobCards').call({
       'radiusKm': ?radiusKm,
@@ -104,6 +116,12 @@ final myJobCardsProvider = StreamProvider<List<JobCard>>((ref) {
 
 final myApplicationsProvider = StreamProvider<List<JobApplication>>((ref) {
   return ref.watch(jobsRepositoryProvider).watchApplications();
+});
+
+/// The applications a teacher has SENT (jobs they applied to).
+final teacherApplicationsProvider =
+    StreamProvider<List<JobApplication>>((ref) {
+  return ref.watch(jobsRepositoryProvider).watchMyApplications();
 });
 
 /// The teacher's Job Cards deck.

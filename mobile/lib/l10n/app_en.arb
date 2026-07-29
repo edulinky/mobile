@@ -1148,6 +1148,18 @@
   "noMoreJobs": "No more jobs right now",
   "@noMoreJobs": {},
 
+  "myApplications": "My Applications",
+  "@myApplications": {},
+
+  "applied": "Applied",
+  "@applied": {},
+
+  "noApplicationsYet": "No applications yet",
+  "@noApplicationsYet": {},
+
+  "noApplicationsYetSubtitle": "Jobs you apply to will show up here.",
+  "@noApplicationsYetSubtitle": {},
+
   "noMoreJobsSubtitle": "You only see jobs in the subjects you teach. Add a subject to widen your search, or start over to revisit the ones you skipped — jobs you've applied to won't come back.",
   "@noMoreJobsSubtitle": {},
 

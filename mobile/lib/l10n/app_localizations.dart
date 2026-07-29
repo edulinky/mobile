@@ -2326,6 +2326,30 @@ abstract class AppLocalizations {
   /// **'No more jobs right now'**
   String get noMoreJobs;
 
+  /// No description provided for @myApplications.
+  ///
+  /// In en, this message translates to:
+  /// **'My Applications'**
+  String get myApplications;
+
+  /// No description provided for @applied.
+  ///
+  /// In en, this message translates to:
+  /// **'Applied'**
+  String get applied;
+
+  /// No description provided for @noApplicationsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No applications yet'**
+  String get noApplicationsYet;
+
+  /// No description provided for @noApplicationsYetSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Jobs you apply to will show up here.'**
+  String get noApplicationsYetSubtitle;
+
   /// No description provided for @noMoreJobsSubtitle.
   ///
   /// In en, this message translates to:

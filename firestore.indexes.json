@@ -125,6 +125,21 @@
       ]
     },
     {
+      "_comment": "A teacher's own applications (jobs they applied to), newest first.",
+      "collectionGroup": "applications",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "teacher_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "created_at",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
       "_comment": "Admin verification queue: teachers awaiting review, oldest submission first.",
       "collectionGroup": "users",
       "queryScope": "COLLECTION",

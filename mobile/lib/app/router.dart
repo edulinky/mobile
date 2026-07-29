@@ -28,6 +28,7 @@ import '../features/settings/screens/teacher_settings_screen.dart';
 import '../features/settings/screens/institution_settings_screen.dart';
 import '../features/jobs/screens/institution_paywall_screen.dart';
 import '../features/jobs/screens/institution_profile_screen.dart';
+import '../features/jobs/screens/teacher_applications_screen.dart';
 import '../features/jobs/screens/institution_dashboard_screen.dart';
 import '../features/jobs/screens/job_card_create_screen.dart';
 import '../features/jobs/screens/job_card_detail_screen.dart';
@@ -159,6 +160,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
 
       // ── Teacher ─────────────────────────────────────────────────────────────
       GoRoute(path: '/teacher/discover', builder: (ctx, s) => const TeacherDiscoverScreen()),
+      GoRoute(path: '/teacher/applications', builder: (ctx, s) => const TeacherApplicationsScreen()),
       GoRoute(path: '/teacher/matches',  builder: (ctx, s) => const TeacherMatchesScreen()),
       GoRoute(path: '/teacher/notifications', builder: (ctx, s) => const NotificationsScreen(role: NavRole.teacher)),
       GoRoute(path: '/teacher/profile',  builder: (ctx, s) => const TeacherProfileEditScreen()),
