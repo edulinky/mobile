@@ -15,11 +15,13 @@ export {placesAutocomplete} from "./places/placesAutocomplete";
 export {placeDetails} from "./places/placeDetails";
 export {onNewMessage} from "./notifications/onNewMessage";
 export {markMatchRead} from "./matches/markMatchRead";
+export {connectWithApplicant} from "./matches/connectWithApplicant";
 export {onVerificationChanged} from "./notifications/onVerificationChanged";
 export {markNotificationsRead} from "./notifications/markNotificationsRead";
 export {upsertJobCard, setJobCardStatus} from "./jobs/upsertJobCard";
 export {getJobCards} from "./jobs/getJobCards";
 export {applyToJob} from "./jobs/applyToJob";
+export {onInstitutionProfileChanged} from "./jobs/onInstitutionProfileChanged";
 export {
   resolveReport,
   approveTeacher,

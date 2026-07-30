@@ -19,6 +19,7 @@ import '../features/discover/screens/student_discover_screen.dart';
 import '../features/discover/screens/teacher_discover_screen.dart';
 import '../features/matches/screens/student_matches_screen.dart';
 import '../features/matches/screens/teacher_matches_screen.dart';
+import '../features/matches/screens/institution_matches_screen.dart';
 import '../features/messages/screens/chat_screen.dart';
 import '../features/profile/screens/public_profile_screen.dart';
 import '../features/profile/screens/student_profile_edit_screen.dart';
@@ -184,8 +185,18 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/institution/job/:jobId',    builder: (ctx, state) =>
           JobCardDetailScreen(jobId: state.pathParameters['jobId'] ?? '')),
       GoRoute(path: '/institution/notifications', builder: (ctx, s) => const NotificationsScreen(role: NavRole.institution)),
+      GoRoute(path: '/institution/matches',       builder: (ctx, s) => const InstitutionMatchesScreen()),
       GoRoute(path: '/institution/profile',       builder: (ctx, s) => const InstitutionProfileScreen()),
       GoRoute(path: '/institution/settings',      builder: (ctx, s) => const InstitutionSettingsScreen()),
+      GoRoute(path: '/institution/chat',          builder: (ctx, state) {
+        final data = state.extra as Map<String, String>? ?? {};
+        return ChatScreen(
+          matchId:        data['matchId'] ?? '',
+          otherName:      data['otherName'] ?? '',
+          otherAvatarUrl: data['otherAvatarUrl'] ?? '',
+          otherUid:       data['otherUid'] ?? '',
+        );
+      }),
     ],
   );
 });

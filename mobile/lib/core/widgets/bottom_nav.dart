@@ -13,11 +13,12 @@ class BottomNav extends ConsumerWidget {
   final int currentIndex;
   final NavRole role;
 
-  // Students and teachers reach Activity from the bell in the Discover header,
-  // not a tab — five tabs was too many.
+  // Every role reaches Activity from a bell (in the Discover header for
+  // student/teacher, on the Dashboard for institution), not a tab — five tabs
+  // was too many, and Activity is a place you visit, not a place you live.
   List<String> get _routes => switch (role) {
     NavRole.teacher     => ['/teacher/discover', '/teacher/matches', '/teacher/profile', '/teacher/settings'],
-    NavRole.institution => ['/institution/dashboard', '/institution/notifications', '/institution/profile', '/institution/settings'],
+    NavRole.institution => ['/institution/dashboard', '/institution/matches', '/institution/profile', '/institution/settings'],
     NavRole.student     => ['/student/discover', '/student/matches', '/student/profile', '/student/settings'],
   };
 
@@ -29,7 +30,7 @@ class BottomNav extends ConsumerWidget {
     final items = switch (role) {
       NavRole.institution => [
         (Icons.dashboard_rounded,      Icons.dashboard_outlined,      l10n.navDashboard,     false),
-        (Icons.notifications_rounded,  Icons.notifications_outlined,  l10n.navNotifications, true),
+        (Icons.handshake_rounded,      Icons.handshake_outlined,      l10n.navMatches,       false),
         (Icons.person_rounded,         Icons.person_outline_rounded,  l10n.navProfile,       false),
         (Icons.settings_rounded,       Icons.settings_outlined,       l10n.navSettings,      false),
       ],

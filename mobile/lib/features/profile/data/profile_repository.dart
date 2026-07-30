@@ -64,6 +64,8 @@ class ProfileRepository {
     List<String>? qualifications,
     List<ExperienceEntry>? experience,
     Map<String, Set<String>>? availability,
+    String? website,
+    String? contactEmail,
   }) async {
     final patch = <String, Object?>{
       'display_name': ?displayName,
@@ -77,6 +79,8 @@ class ProfileRepository {
       'experience': ?experience?.map((e) => e.toMap()).toList(),
       'availability': ?availability
           ?.map((day, slots) => MapEntry(day, slots.toList())),
+      'website': ?website,
+      'contact_email': ?contactEmail,
     };
     if (patch.isEmpty) return;
     await Fb.users.doc(_uid).update(patch);

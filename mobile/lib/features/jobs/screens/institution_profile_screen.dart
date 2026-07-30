@@ -1,53 +1,27 @@
-import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../../core/widgets/avatar_image.dart';
 import '../../../core/widgets/bottom_nav.dart';
+import '../../../core/widgets/city_picker_screen.dart';
+import '../../../core/widgets/photo_crop_screen.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/extensions/l10n_extension.dart';
+import '../../profile/data/profile_repository.dart';
+import '../../profile/models/user_profile.dart';
 
-class InstitutionProfileScreen extends StatefulWidget {
+/// An institution's own public info: org name, description, city, website,
+/// contact email, logo. Shown to teachers via job cards (`institution_name` /
+/// `institution_logo_url`, copied from these fields at post time) and — once
+/// they've applied and been connected with — in chat.
+class InstitutionProfileScreen extends ConsumerWidget {
   const InstitutionProfileScreen({super.key});
 
   @override
-  State<InstitutionProfileScreen> createState() => _InstitutionProfileScreenState();
-}
-
-class _InstitutionProfileScreenState extends State<InstitutionProfileScreen> {
-  final _nameCtrl    = TextEditingController(text: 'Sunshine Academy');
-  final _descCtrl    = TextEditingController(
-      text: 'A forward-thinking secondary school committed to academic excellence and character development.');
-  final _locationCtrl = TextEditingController(text: 'Ho Chi Minh City, Vietnam');
-  final _websiteCtrl  = TextEditingController(text: 'https://sunshineacademy.edu');
-  final _emailCtrl    = TextEditingController(text: 'hr@sunshineacademy.edu');
-  XFile? _logo;
-  bool _saved = false;
-
-  @override
-  void dispose() {
-    _nameCtrl.dispose();
-    _descCtrl.dispose();
-    _locationCtrl.dispose();
-    _websiteCtrl.dispose();
-    _emailCtrl.dispose();
-    super.dispose();
-  }
-
-  Future<void> _pickLogo() async {
-    final file = await ImagePicker().pickImage(source: ImageSource.gallery, imageQuality: 85);
-    if (file != null) setState(() => _logo = file);
-  }
-
-  void _save() {
-    // TODO: call API
-    setState(() => _saved = true);
-    Future.delayed(const Duration(seconds: 2), () {
-      if (mounted) setState(() => _saved = false);
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
+    final profile = ref.watch(myProfileProvider);
     return Scaffold(
       backgroundColor: AppColors.skyBg,
       body: SafeArea(
@@ -60,22 +34,23 @@ class _InstitutionProfileScreenState extends State<InstitutionProfileScreen> {
                 children: [
                   Text(l10n.institutionProfileTitle,
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.w800, color: AppColors.text)),
+                          fontWeight: FontWeight.w800, color: AppColors.text)),
                 ],
               ),
             ),
             Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
-                child: Column(
-                  children: [
-                    _buildLogoSection(l10n),
-                    const SizedBox(height: 24),
-                    _buildFormCard(context, l10n),
-                    const SizedBox(height: 24),
-                    _buildSaveButton(context, l10n),
-                  ],
+              child: profile.when(
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (e, _) => Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Text(l10n.errLoadProfile('$e'),
+                        textAlign: TextAlign.center),
+                  ),
                 ),
+                // Keyed on the doc's own field, so a save elsewhere does not
+                // silently reset the form the institution is mid-editing.
+                data: (p) => _Form(key: ValueKey(p.uid), profile: p),
               ),
             ),
             const BottomNav(currentIndex: 2, role: NavRole.institution),
@@ -84,8 +59,145 @@ class _InstitutionProfileScreenState extends State<InstitutionProfileScreen> {
       ),
     );
   }
+}
 
-  Widget _buildLogoSection(dynamic l10n) {
+class _Form extends ConsumerStatefulWidget {
+  const _Form({super.key, required this.profile});
+
+  final UserProfile profile;
+
+  @override
+  ConsumerState<_Form> createState() => _FormState();
+}
+
+class _FormState extends ConsumerState<_Form> {
+  late final TextEditingController _nameCtrl;
+  late final TextEditingController _descCtrl;
+  late final TextEditingController _websiteCtrl;
+  late final TextEditingController _emailCtrl;
+
+  Uint8List? _newLogo;
+  String? _cityLabel;
+  bool _saving = false;
+  bool _saved = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final p = widget.profile;
+    _nameCtrl = TextEditingController(text: p.displayName);
+    _descCtrl = TextEditingController(text: p.about);
+    _websiteCtrl = TextEditingController(text: p.website);
+    _emailCtrl = TextEditingController(text: p.contactEmail);
+  }
+
+  @override
+  void dispose() {
+    _nameCtrl.dispose();
+    _descCtrl.dispose();
+    _websiteCtrl.dispose();
+    _emailCtrl.dispose();
+    super.dispose();
+  }
+
+  void _snack(String msg) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+  }
+
+  Future<void> _pickLogo() async {
+    final l10n = context.l10n;
+    final file =
+        await ImagePicker().pickImage(source: ImageSource.gallery, imageQuality: 95);
+    if (file == null) return;
+    final bytes = await file.readAsBytes();
+    if (!mounted) return;
+    final cropped = await PhotoCropScreen.push(context, bytes);
+    if (cropped == null) return;
+
+    // Upload immediately, same as everywhere else a profile photo is set —
+    // holding it until "Save Profile" would silently drop it if the user left
+    // the screen first.
+    setState(() {
+      _newLogo = cropped;
+      _saving = true;
+    });
+    try {
+      await ref.read(profileRepositoryProvider).setAvatar(cropped);
+    } catch (e) {
+      if (mounted) setState(() => _newLogo = null);
+      _snack(l10n.errSaveProfile('$e'));
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  Future<void> _pickCity() async {
+    final l10n = context.l10n;
+    final picked = await CityPickerScreen.push(context);
+    if (picked == null) return;
+    setState(() => _saving = true);
+    try {
+      // Server-derived geohash — this is also what makes the institution's job
+      // cards findable, so it goes through the same callable as everyone else's
+      // location, never a raw client write.
+      await ref.read(profileRepositoryProvider).setCity(picked);
+      if (mounted) setState(() => _cityLabel = picked.city);
+    } catch (e) {
+      _snack(l10n.errUpdateCity('$e'));
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  Future<void> _save() async {
+    if (_saving) return;
+    final l10n = context.l10n;
+    setState(() {
+      _saving = true;
+      _saved = false;
+    });
+    try {
+      await ref.read(profileRepositoryProvider).updateProfile(
+            displayName: _nameCtrl.text.trim(),
+            about: _descCtrl.text.trim(),
+            website: _websiteCtrl.text.trim(),
+            contactEmail: _emailCtrl.text.trim(),
+          );
+    } catch (e) {
+      if (mounted) setState(() => _saving = false);
+      _snack(l10n.errSaveProfile('$e'));
+      return;
+    }
+    if (!mounted) return;
+    setState(() {
+      _saving = false;
+      _saved = true;
+    });
+    Future.delayed(const Duration(seconds: 2), () {
+      if (mounted) setState(() => _saved = false);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final city = _cityLabel ?? widget.profile.geoLocation?.city ?? '';
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+      child: Column(
+        children: [
+          _buildLogoSection(),
+          const SizedBox(height: 24),
+          _buildFormCard(context, l10n, city),
+          const SizedBox(height: 24),
+          _buildSaveButton(context, l10n),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLogoSection() {
     return Center(
       child: GestureDetector(
         onTap: _pickLogo,
@@ -98,13 +210,14 @@ class _InstitutionProfileScreenState extends State<InstitutionProfileScreen> {
                 color: AppColors.skyLight,
                 borderRadius: BorderRadius.circular(24),
                 border: Border.all(color: AppColors.sky, width: 2),
-                image: _logo != null
-                    ? DecorationImage(image: FileImage(File(_logo!.path)), fit: BoxFit.cover)
-                    : null,
               ),
-              child: _logo == null
-                  ? const Icon(Icons.account_balance_rounded, size: 40, color: AppColors.skyDark)
-                  : null,
+              clipBehavior: Clip.hardEdge,
+              child: _newLogo != null
+                  ? Image.memory(_newLogo!, fit: BoxFit.cover)
+                  : (widget.profile.photoUrl.isNotEmpty
+                      ? AvatarImage(url: widget.profile.photoUrl)
+                      : const Icon(Icons.account_balance_rounded,
+                          size: 40, color: AppColors.skyDark)),
             ),
             Positioned(
               right: 0,
@@ -126,7 +239,7 @@ class _InstitutionProfileScreenState extends State<InstitutionProfileScreen> {
     );
   }
 
-  Widget _buildFormCard(BuildContext context, dynamic l10n) {
+  Widget _buildFormCard(BuildContext context, dynamic l10n, String city) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -160,12 +273,21 @@ class _InstitutionProfileScreenState extends State<InstitutionProfileScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          TextFormField(
-            controller: _locationCtrl,
-            decoration: InputDecoration(
-              labelText: l10n.cityLocation,
-              hintText: l10n.cityLocationHint,
-              prefixIcon: const Icon(Icons.location_on_outlined),
+          InkWell(
+            onTap: _pickCity,
+            borderRadius: BorderRadius.circular(14),
+            child: InputDecorator(
+              decoration: InputDecoration(
+                labelText: l10n.cityLocation,
+                prefixIcon: const Icon(Icons.location_on_outlined),
+                suffixIcon: const Icon(Icons.arrow_drop_down_rounded),
+              ),
+              child: Text(
+                city.isEmpty ? l10n.cityLocationHint : city,
+                style: TextStyle(
+                    fontSize: 16,
+                    color: city.isEmpty ? AppColors.text3 : AppColors.text),
+              ),
             ),
           ),
           const SizedBox(height: 16),
@@ -224,8 +346,13 @@ class _InstitutionProfileScreenState extends State<InstitutionProfileScreen> {
                   textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
                   elevation: 0,
                 ),
-                onPressed: _save,
-                child: Text(l10n.saveProfile),
+                onPressed: _saving ? null : _save,
+                child: _saving
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                    : Text(l10n.saveProfile),
               ),
             ),
     );

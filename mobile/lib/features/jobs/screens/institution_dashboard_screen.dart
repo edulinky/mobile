@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/extensions/l10n_extension.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/bottom_nav.dart';
+import '../../notifications/widgets/activity_bell.dart';
 import '../data/jobs_repository.dart';
 import '../models/job_card.dart';
 import '../widgets/salary_period_x.dart';
@@ -36,10 +37,12 @@ class InstitutionDashboardScreen extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(l10n.dashboardTitle,
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.w800, color: AppColors.text)),
+                  const ActivityBell(role: NavRole.institution),
                 ],
               ),
             ),

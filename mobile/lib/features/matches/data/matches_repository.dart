@@ -65,6 +65,18 @@ class MatchesRepository {
     });
   }
 
+  /// An institution connects with a teacher who applied to one of its jobs —
+  /// creates the match directly. Not `recordSwipe`: that flow is metered and
+  /// mutual (built for the student<->teacher swipe deck); an institution has
+  /// no swipe quota, and the application is already the teacher's one-sided
+  /// "yes". Returns the new (or existing, if already connected) matchId.
+  Future<String> connectWithApplicant(String teacherUid) async {
+    final res = await Fb.functions
+        .httpsCallable('connectWithApplicant')
+        .call({'teacherId': teacherUid});
+    return ((res.data as Map)['matchId'] ?? '') as String;
+  }
+
   /// Clears my unread badge for this match.
   Future<void> markRead(String matchId) async {
     try {

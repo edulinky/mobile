@@ -87,6 +87,8 @@ class UserProfile {
     required this.availability,
     required this.videoLinks,
     required this.featured,
+    required this.website,
+    required this.contactEmail,
   });
 
   final String uid;
@@ -118,6 +120,13 @@ class UserProfile {
 
   /// Server-owned: an admin promotes a profile in discovery.
   final bool featured;
+
+  /// Institution-only. Empty for every other role.
+  final String website;
+
+  /// Institution-only: a public HR/contact address, separate from the account's
+  /// own sign-in `email` (which must not be arbitrarily client-editable).
+  final String contactEmail;
 
   bool get isVerified => verifiedStatus == 'approved';
 
@@ -161,6 +170,8 @@ class UserProfile {
       availability: _availabilityFrom(d['availability']),
       videoLinks: _stringList(d['video_links']),
       featured: (d['featured'] as bool?) ?? false,
+      website: (d['website'] as String?) ?? '',
+      contactEmail: (d['contact_email'] as String?) ?? '',
     );
   }
 }

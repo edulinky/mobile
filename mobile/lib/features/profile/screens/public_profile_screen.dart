@@ -1,3 +1,4 @@
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -450,6 +451,14 @@ class _BottomBar extends ConsumerWidget {
       }
     }
 
+    // An institution reaches this screen only from a job's applicant list, so
+    // "not matched yet" here means "an applicant I haven't connected with" —
+    // Connect goes through connectWithApplicant, not the swipe deck's verbs.
+    final myRole = ref.watch(authStateProvider).valueOrNull?.role;
+    if (myRole == 'institution') {
+      return _InstitutionConnectBar(profile: profile, l10n: l10n);
+    }
+
     return _ConnectBar(l10n: l10n);
   }
 }
@@ -464,8 +473,11 @@ class _MessageBar extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final myRole = ref.watch(authStateProvider).valueOrNull?.role;
-    final chatRoute =
-        myRole == 'teacher' ? '/teacher/chat' : '/student/chat';
+    final chatRoute = switch (myRole) {
+      'teacher' => '/teacher/chat',
+      'institution' => '/institution/chat',
+      _ => '/student/chat',
+    };
 
     return Container(
       padding: EdgeInsets.fromLTRB(
@@ -555,6 +567,113 @@ class _ConnectBar extends StatelessWidget {
               // Wired to recordSwipe in Phase 4 — for now it just closes.
               label: Text(l10n.connectBtn),
               onPressed: () => Navigator.of(context).pop(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// An institution's Pass/Connect on a job applicant's profile. Connect calls
+/// `connectWithApplicant` (server-verified: the teacher must actually have
+/// applied to one of this institution's jobs) and, on success, drops straight
+/// into the new chat — "start talking with the teacher" is the whole point of
+/// connecting, so there is nothing else useful to show first.
+class _InstitutionConnectBar extends ConsumerStatefulWidget {
+  const _InstitutionConnectBar({required this.profile, required this.l10n});
+
+  final UserProfile profile;
+  final dynamic l10n;
+
+  @override
+  ConsumerState<_InstitutionConnectBar> createState() =>
+      _InstitutionConnectBarState();
+}
+
+class _InstitutionConnectBarState
+    extends ConsumerState<_InstitutionConnectBar> {
+  bool _loading = false;
+
+  Future<void> _connect() async {
+    if (_loading) return;
+    setState(() => _loading = true);
+    try {
+      final matchId = await ref
+          .read(matchesRepositoryProvider)
+          .connectWithApplicant(widget.profile.uid);
+      if (!mounted) return;
+      context.push('/institution/chat', extra: {
+        'matchId': matchId,
+        'otherName': widget.profile.displayName,
+        'otherAvatarUrl': widget.profile.photoUrl,
+        'otherUid': widget.profile.uid,
+      });
+    } on FirebaseFunctionsException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.message ?? widget.l10n.errorGeneric)));
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(widget.l10n.errorGeneric)));
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = widget.l10n;
+    return Container(
+      padding: EdgeInsets.fromLTRB(
+          16, 12, 16, MediaQuery.of(context).padding.bottom + 12),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.92),
+        border:
+            const Border(top: BorderSide(color: AppColors.skyLight, width: 0.8)),
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withValues(alpha: 0.06),
+              blurRadius: 10,
+              offset: const Offset(0, -2))
+        ],
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: OutlinedButton.icon(
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppColors.text2,
+                side: const BorderSide(color: AppColors.skyLight),
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+              ),
+              icon: const Icon(Icons.close_rounded, size: 18),
+              label: Text(l10n.passBtn),
+              onPressed: _loading ? null : () => Navigator.of(context).pop(),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            flex: 2,
+            child: ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                elevation: 0,
+              ),
+              icon: _loading
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                          strokeWidth: 2, color: Colors.white))
+                  : const Icon(Icons.handshake_rounded, size: 18),
+              label: Text(l10n.connectBtn),
+              onPressed: _loading ? null : _connect,
             ),
           ),
         ],
