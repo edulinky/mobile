@@ -56,10 +56,14 @@ export const getJobCards = onCall(async (request) => {
 
   // Jobs I have already applied to never resurface. (Unlike people, there is no
   // "pass" to un-do here: applying is one-directional.)
+  //
+  // `.select()` with NO field names projects to an EMPTY field set, not "all
+  // fields" — every `d.get("job_id")` below would silently be `undefined`,
+  // and the exclusion would never fire. The field must be named explicitly.
   const appliedSnap = await db
     .collection("applications")
     .where("teacher_id", "==", uid)
-    .select()
+    .select("job_id")
     .get();
   const applied = new Set(appliedSnap.docs.map((d) => d.get("job_id") as string));
 
