@@ -610,6 +610,18 @@ abstract class AppLocalizations {
   /// **'No matches yet'**
   String get noMatchesYet;
 
+  /// No description provided for @searchMatchesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search matches'**
+  String get searchMatchesHint;
+
+  /// No description provided for @noMatchesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No matches found'**
+  String get noMatchesFound;
+
   /// No description provided for @noMatchesSubtitle.
   ///
   /// In en, this message translates to:

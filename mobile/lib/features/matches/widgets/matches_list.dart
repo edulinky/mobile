@@ -9,18 +9,39 @@ import '../data/matches_repository.dart';
 import '../models/chat_models.dart';
 
 /// The signed-in user's matches: the ones nobody has written in yet as a row of
-/// avatars ("new matches"), the rest as a conversation list.
+/// avatars ("new matches"), the rest as a conversation list. A search field
+/// filters both by the other person's name or the last message.
 ///
-/// Shared by the student and teacher screens — a match is symmetric, so there is
-/// nothing role-specific to render.
-class MatchesList extends ConsumerWidget {
+/// Shared by the student, teacher, and institution screens — a match is
+/// symmetric, so there is nothing role-specific to render.
+class MatchesList extends ConsumerStatefulWidget {
   const MatchesList({super.key, required this.chatRoute});
 
   /// Where to push a conversation, e.g. `/student/chat`.
   final String chatRoute;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<MatchesList> createState() => _MatchesListState();
+}
+
+class _MatchesListState extends ConsumerState<MatchesList> {
+  final _searchCtrl = TextEditingController();
+  String _query = '';
+
+  @override
+  void dispose() {
+    _searchCtrl.dispose();
+    super.dispose();
+  }
+
+  /// The other person's name, resolved the same way each tile already does —
+  /// watching here too is free: it is the same cached provider, not a second
+  /// fetch.
+  String _nameOf(MatchThread m) =>
+      ref.watch(userProfileProvider(m.otherUid)).valueOrNull?.displayName ?? '';
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
     return ref.watch(matchesProvider).when(
           loading: () => const Center(child: CircularProgressIndicator()),
@@ -33,52 +54,121 @@ class MatchesList extends ConsumerWidget {
           data: (matches) {
             if (matches.isEmpty) return _empty(context, l10n);
 
-            final fresh = matches.where((m) => !m.hasMessages).toList();
-            final threads = matches.where((m) => m.hasMessages).toList();
+            final query = _query.trim().toLowerCase();
+            final visible = query.isEmpty
+                ? matches
+                : matches.where((m) {
+                    return _nameOf(m).toLowerCase().contains(query) ||
+                        m.lastMessage.toLowerCase().contains(query);
+                  }).toList();
 
-            return ListView(
-              padding: const EdgeInsets.fromLTRB(0, 4, 0, 16),
+            final fresh = visible.where((m) => !m.hasMessages).toList();
+            final threads = visible.where((m) => m.hasMessages).toList();
+
+            return Column(
               children: [
-                if (fresh.isNotEmpty) ...[
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 8, 20, 10),
-                    child: Text(l10n.newMatchesLabel,
-                        style: const TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w800,
-                            color: AppColors.text2)),
-                  ),
-                  SizedBox(
-                    height: 92,
-                    child: ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      itemCount: fresh.length,
-                      separatorBuilder: (_, _) => const SizedBox(width: 14),
-                      itemBuilder: (_, i) => _NewMatchAvatar(
-                        match: fresh[i],
-                        chatRoute: chatRoute,
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 4, 20, 8),
+                  child: TextField(
+                    controller: _searchCtrl,
+                    textInputAction: TextInputAction.search,
+                    onChanged: (v) => setState(() => _query = v),
+                    decoration: InputDecoration(
+                      hintText: l10n.searchMatchesHint,
+                      prefixIcon: const Icon(Icons.search_rounded, size: 20),
+                      suffixIcon: _query.isEmpty
+                          ? null
+                          : IconButton(
+                              icon: const Icon(Icons.clear_rounded, size: 18),
+                              onPressed: () => setState(() {
+                                _searchCtrl.clear();
+                                _query = '';
+                              }),
+                            ),
+                      isDense: true,
+                      contentPadding:
+                          const EdgeInsets.symmetric(vertical: 12),
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
+                        borderSide: const BorderSide(color: AppColors.skyLight),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
+                        borderSide: const BorderSide(color: AppColors.skyLight),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 8),
-                ],
-                if (threads.isNotEmpty) ...[
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 12, 20, 8),
-                    child: Text(l10n.messagesLabel,
-                        style: const TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w800,
-                            color: AppColors.text2)),
-                  ),
-                  for (final m in threads)
-                    _ThreadTile(match: m, chatRoute: chatRoute),
-                ],
+                ),
+                Expanded(
+                  child: visible.isEmpty
+                      ? _noResults(context, l10n)
+                      : ListView(
+                          padding: const EdgeInsets.fromLTRB(0, 4, 0, 16),
+                          children: [
+                            if (fresh.isNotEmpty) ...[
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(20, 8, 20, 10),
+                                child: Text(l10n.newMatchesLabel,
+                                    style: const TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w800,
+                                        color: AppColors.text2)),
+                              ),
+                              SizedBox(
+                                height: 92,
+                                child: ListView.separated(
+                                  scrollDirection: Axis.horizontal,
+                                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                                  itemCount: fresh.length,
+                                  separatorBuilder: (_, _) => const SizedBox(width: 14),
+                                  itemBuilder: (_, i) => _NewMatchAvatar(
+                                    match: fresh[i],
+                                    chatRoute: widget.chatRoute,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                            ],
+                            if (threads.isNotEmpty) ...[
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(20, 12, 20, 8),
+                                child: Text(l10n.messagesLabel,
+                                    style: const TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w800,
+                                        color: AppColors.text2)),
+                              ),
+                              for (final m in threads)
+                                _ThreadTile(match: m, chatRoute: widget.chatRoute),
+                            ],
+                          ],
+                        ),
+                ),
               ],
             );
           },
         );
+  }
+
+  Widget _noResults(BuildContext context, dynamic l10n) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 40),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.search_off_rounded, size: 56, color: AppColors.text3),
+            const SizedBox(height: 12),
+            Text(l10n.noMatchesFound,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700, color: AppColors.text)),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _empty(BuildContext context, dynamic l10n) {

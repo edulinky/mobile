@@ -287,6 +287,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noMatchesYet => 'No matches yet';
 
   @override
+  String get searchMatchesHint => 'Search matches';
+
+  @override
+  String get noMatchesFound => 'No matches found';
+
+  @override
   String get noMatchesSubtitle => 'Start swiping to find your perfect teacher';
 
   @override

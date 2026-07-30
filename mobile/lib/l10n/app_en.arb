@@ -275,6 +275,12 @@
   "noMatchesYet": "No matches yet",
   "@noMatchesYet": {},
 
+  "searchMatchesHint": "Search matches",
+  "@searchMatchesHint": {},
+
+  "noMatchesFound": "No matches found",
+  "@noMatchesFound": {},
+
   "noMatchesSubtitle": "Start swiping to find your perfect teacher",
   "@noMatchesSubtitle": {},
 
