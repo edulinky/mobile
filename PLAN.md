@@ -112,27 +112,20 @@ edulink/
 
 **Phase 2 (initial) ships Email/Password only.** Social + passwordless providers are deferred to Phase 2.5 below.
 
-#### Phase 2.5 — Additional Auth Providers (Deferred)
+#### Phase 2.5 — Additional Auth Providers
 
-Add these once the Email/Password flow is solid. All four resolve to the same `firebase_auth` `User` and the same `onRegister` → Custom Claims path, so the role system is unchanged — but **first-time social/passwordless sign-ins skip the 3-step registration**, so they need a "complete your profile" step to capture **role + display name** before landing in the app.
+All resolve to the same `firebase_auth` `User` and the same `completeRegistration` → Custom Claims path, so the role system is unchanged — a first-time social sign-in has no role yet, so it's routed into role selection (step 2 of registration) before landing in the app, name/email pre-filled from the provider.
 
-- **Apple Sign-In — required, not optional.** App Store Review Guideline 4.8 mandates Sign in with Apple for any app offering third-party sign-in (Google). Blocks iOS submission if missing.
-  - Firebase console: enable **Apple** provider
-  - Apple Developer: create a **Services ID**, enable "Sign in with Apple" on the App ID, generate the **key (.p8)** + Key ID + Team ID, configure the return URL
-  - Flutter: `sign_in_with_apple` + `firebase_auth` `signInWithProvider(AppleAuthProvider())`; `Info.plist` / Xcode "Sign in with Apple" capability
-  - Note: Apple only returns name/email on the **first** authorization — persist it immediately or it's lost
-- **Google Sign-In**
-  - Firebase console: enable **Google** provider (sets the OAuth client)
-  - Flutter: `google_sign_in` + `firebase_auth`; Android needs the **SHA-1/SHA-256** fingerprints added in Firebase; iOS needs the reversed-client-id `CFBundleURLScheme` in `Info.plist`
-- **Email link (passwordless)**
-  - Firebase console: enable **Email link (passwordless sign-in)** under the Email/Password provider
-  - Flutter: `sendSignInLinkToEmail` + `signInWithEmailLink`; requires deep-link handling (universal links / app links) to catch the return link and an `ActionCodeSettings` with the `eduLinky.com` domain
-  - Depends on the custom domain + email being live
-- **Cross-cutting work for all three:**
-  - New-user detection (`userCredential.additionalUserInfo?.isNewUser`) → route to a **role + display-name capture screen** before the app shell; `onRegister` writes the `users/{uid}` doc + sets the role claim from that input
-  - Account-linking strategy for same-email-different-provider collisions (`account-exists-with-different-credential`)
-  - Update login/register screens with Apple/Google buttons (Apple button must follow Apple's HIG styling)
-  - Admin panel stays **Email/Password only** — no social providers there
+- **Apple Sign-In** — ✅ **DONE.** Required, not optional: App Store Review Guideline 4.8 mandates it for any app offering third-party sign-in (Google), or the app is blocked from iOS submission.
+  - `mobile/lib/features/auth/data/auth_repository.dart` `signInWithApple()` — uses Firebase's built-in `FirebaseAuth.signInWithProvider(AppleAuthProvider())`, **not** a hand-built credential from `sign_in_with_apple` + `OAuthProvider('apple.com').credential(...)`. That manual path was tried first and reproducibly failed against this project (`invalid-credential` / "Invalid OAuth response from apple.com") even with a provably valid identity token and fully-verified Apple/Firebase config — `signInWithProvider` just works, so it's what ships. `sign_in_with_apple` stays a dependency only for its `SignInWithAppleButton` UI widget.
+  - Apple Developer: Services ID (`com.edulinky.signin`), Sign in with Apple key (.p8) + Key ID + Team ID, Web Authentication Configuration (return URL) — all configured and required; do not clear this to "fix" a future error, see the code comment.
+  - `ios/Runner/Runner.entitlements` has `com.apple.developer.applesignin`.
+- **Google Sign-In** — ✅ **DONE**, mobile (iOS) + admin panel.
+  - Mobile: `google_sign_in` + `firebase_auth`, `signInWithGoogle()` in the same `auth_repository.dart`.
+  - Admin: `admin/src/components/LoginForm.tsx` — `signInWithPopup(GoogleAuthProvider())`. Still gated by the `admin` role claim same as email/password, so a non-admin Google account just hits "Not an admin".
+  - **Android not yet wired** (no SHA-1/SHA-256 fingerprints registered — Android hasn't been built/tested at all this cycle, iOS-only so far).
+- **Email link (passwordless)** — not built. Lowest priority of the three; no current demand.
+- **Remaining cross-cutting item:** account-linking strategy for same-email-different-provider collisions (`account-exists-with-different-credential`) is not handled — a user who signs up with email/password and later taps "Continue with Google" using the same address gets Firebase's default error, not a merged account.
 
 ### Phase 3 — Profile System
 - Full `users/{uid}` Firestore schema: uid, role, sub_status, geo_location (lat/lng/geohash/city), verified_status, cert_url, video_links, gallery, qualifications, experience, availability, avg_rating, total_reviews, is_banned, featured
@@ -264,7 +257,7 @@ The doc's monetization rules (FR-3.1 – FR-3.3) and what each one costs us:
 | **FR-3.1** Free Student: 20 right swipes / 24h — **15 primary + 5 discovery** | `shared/quotas.ts` + `recordSwipe` | ✅ **Done.** Two *separate* budgets, so burning the 5 discovery swipes cannot eat the 15 primary ones. Rolling 24h window. **Left swipes are not metered** — only expressions of interest are. Which bucket a swipe draws from is decided by `bucketFor()` → `canonicalSubject()`, so "Maths" vs "Mathematics" doesn't silently charge the scarcer budget. |
 | **FR-3.2** Free Teacher: "limited swipes, **to be defined by Admin**" | `config/quotas` + admin **Quotas** screen | ✅ **Done.** `limitsForRole()` reads an override from `config/quotas` **without a redeploy** — that indirection exists *because* the doc leaves the number to the admin. `getQuotas` / `setQuotas` (admin-only, audited) drive a **Quotas** screen in the panel. One setting **per role**, not per user: it moves every free user in that role on their next swipe. `config/*` stays unreadable and unwritable to clients — a client that could write it would grant itself unlimited swipes — hence the callables. |
 | **FR-3.3** Premium Student / Teacher: **unlimited swipes** | `recordSwipe` | ⚠️ **Logic done, unreachable.** The quota is skipped when `sub_status != "free"` — but **nothing can set `sub_status`**, so today nobody can be premium. That is exactly what this phase unblocks. |
-| **FR-3.3** Premium Teacher: **"Featured" badge** | `setFeatured` (admin) | ❌ **Missing the link.** `featured` exists and boosts discovery, but it is *admin-granted only* — it is not tied to the subscription. **A premium teacher must get it automatically, and lose it when they lapse**, or the perk they paid for depends on an admin remembering. |
+| **FR-3.3** Premium Teacher: **"Featured" badge** | `revenuecatWebhook` | ✅ **Done, code side.** The webhook flips `featured` on grant and revoke — tied to the subscription, not admin memory. `setFeatured` still exists for a manual admin override, separate from this. Unreachable for the same reason as the row above: nobody can become premium until the RevenueCat dashboard setup lands. |
 | **FR-3.3** Institution: **mandatory subscription** to access the dashboard or post Job Cards | `upsertJobCard`, rules, paywall screen | ❌ **Not enforced.** Any institution can post today. The paywall screen exists but is inert. This is the one place where money gates a *feature*, not a *limit* — and the doc is explicit ("Mandatory Subscription required"). |
 
 #### Stripe or RevenueCat? (the doc says "Stripe/RevenueCat" — they are not alternatives)
