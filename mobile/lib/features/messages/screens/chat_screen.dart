@@ -256,8 +256,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   }
 
   Widget _buildInputBar(BuildContext context, dynamic l10n) {
+    // Bottom padding is the SAFE-AREA inset (home indicator), not the keyboard
+    // inset — the Scaffold already resizes the body to sit above the keyboard
+    // (resizeToAvoidBottomInset: true, the default), so adding
+    // viewInsets.bottom here double-counts the keyboard height and squeezes
+    // this bar into a box almost as tall as the keyboard itself.
     return Container(
-      padding: EdgeInsets.fromLTRB(12, 8, 12, MediaQuery.of(context).viewInsets.bottom + 12),
+      padding: EdgeInsets.fromLTRB(12, 8, 12, MediaQuery.of(context).padding.bottom + 12),
       decoration: BoxDecoration(
         color: Colors.white,
         border: const Border(top: BorderSide(color: AppColors.skyLight, width: 0.8)),
