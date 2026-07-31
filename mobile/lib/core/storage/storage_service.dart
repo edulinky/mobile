@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../firebase/firebase_refs.dart';
+import 'image_compress.dart';
 
 /// Uploads user media to Firebase Storage. Paths mirror `storage.rules`:
 /// `avatars/{uid}/…` and `gallery/{uid}/…` are readable by signed-in users;
@@ -10,12 +11,17 @@ class StorageService {
   const StorageService();
 
   /// Uploads the cropped profile photo and returns its public download URL.
+  ///
+  /// Compressed first — this is the one choke point every avatar upload in the
+  /// app goes through (registration, profile edit, institution logo), so
+  /// resizing/re-encoding here covers all of them without touching each screen.
   Future<String> uploadAvatar({
     required String uid,
     required Uint8List bytes,
   }) async {
+    final compressed = await compressImageForUpload(bytes);
     final ref = Fb.storage.ref('avatars/$uid/profile.jpg');
-    await ref.putData(bytes, SettableMetadata(contentType: 'image/jpeg'));
+    await ref.putData(compressed, SettableMetadata(contentType: 'image/jpeg'));
     return ref.getDownloadURL();
   }
 
@@ -26,10 +32,11 @@ class StorageService {
     required String uid,
     required Uint8List bytes,
   }) async {
+    final compressed = await compressImageForUpload(bytes);
     final path = 'gallery/$uid/${DateTime.now().millisecondsSinceEpoch}.jpg';
     await Fb.storage
         .ref(path)
-        .putData(bytes, SettableMetadata(contentType: 'image/jpeg'));
+        .putData(compressed, SettableMetadata(contentType: 'image/jpeg'));
     return path;
   }
 
