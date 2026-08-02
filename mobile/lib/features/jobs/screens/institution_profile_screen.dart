@@ -152,6 +152,9 @@ class _FormState extends ConsumerState<_Form> {
 
   Future<void> _save() async {
     if (_saving) return;
+    // Tapping Save while a field is still focused otherwise leaves the
+    // keyboard covering the screen after the request completes.
+    FocusScope.of(context).unfocus();
     final l10n = context.l10n;
     setState(() {
       _saving = true;

@@ -260,6 +260,9 @@ class _BioTabState extends ConsumerState<_BioTab> {
 
   Future<void> _save() async {
     if (_saving) return;
+    // Tapping Save while a field is still focused otherwise leaves the
+    // keyboard covering the screen after the request completes.
+    FocusScope.of(context).unfocus();
     final l10n = context.l10n;
     setState(() {
       _saving = true;
@@ -609,6 +612,7 @@ class _QualificationsTabState extends ConsumerState<_QualificationsTab> {
 
   Future<void> _save() async {
     if (_saving) return;
+    FocusScope.of(context).unfocus();
     setState(() { _saving = true; _saved = false; });
     final values = _ctrls
         .map((c) => c.text.trim())
@@ -745,6 +749,7 @@ class _ExperienceTabState extends ConsumerState<_ExperienceTab> {
 
   Future<void> _save() async {
     if (_saving) return;
+    FocusScope.of(context).unfocus();
     setState(() { _saving = true; _saved = false; });
     final values = _entries
         .where((e) => !e.isEmpty)
@@ -888,6 +893,7 @@ class _ScheduleTabState extends ConsumerState<_ScheduleTab> {
 
   Future<void> _save() async {
     if (_saving) return;
+    FocusScope.of(context).unfocus();
     setState(() { _saving = true; _saved = false; });
     try {
       await ref
@@ -1017,6 +1023,7 @@ class _VideosTabState extends ConsumerState<_VideosTab> {
 
   Future<void> _save() async {
     if (_saving) return;
+    FocusScope.of(context).unfocus();
     setState(() { _saving = true; _saved = false; });
     final links = _ctrls
         .map((c) => c.text.trim())
